@@ -43,4 +43,14 @@ class EmpleadoService
 
         $this->empleadoRepository->actualizar($id, $datos);
     }
+
+    public function obtenerServiciosAsignados(int $id)
+    {
+        return $this->empleadoRepository->obtenerServiciosAsignados($id); 
+    }
+
+    public function sincronizarServicios(int $id, array $idsServicios)
+    {
+        $this->empleadoRepository->sincronizarServicios($id, $idsServicios);
+    }    
 }

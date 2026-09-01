@@ -92,13 +92,27 @@
                 </select>
             </div>
 
+            <div class="mb-5">
+                <label class="block mb-2 font-semibold">Servicios que ofrece</label>
+                @foreach ($servicios as $servicio)
+                    <div>
+                        <input 
+                            type="checkbox" 
+                            name="servicios[]" 
+                            value="{{ $servicio->id }}"
+                            id="servicio_{{ $servicio->id }}"
+                            {{ in_array($servicio->id, $serviciosAsignados) ? 'checked' : '' }}
+                        >
+                        <label for="servicio_{{ $servicio->id }}">{{ $servicio->nombreServicio }}</label>
+                    </div>
+                @endforeach
+            </div>
 
             <div>
                 <button type="submit" class="bg-green-500 hover:bg-green-600 text-white rounded px-5 py-2">
                     Guardar
                 </button>
             </div>
-
         </form>
 
     </div>

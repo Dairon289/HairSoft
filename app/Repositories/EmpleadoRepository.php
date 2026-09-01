@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\empleado;
+use App\Models\servicio;
 
 class EmpleadoRepository
 {
@@ -33,5 +34,20 @@ class EmpleadoRepository
     {
         $empleado = empleado::findOrFail($id);
         $empleado->update($datos);
+    }
+
+    public function obtenerServiciosAsignados(int $id)
+    {
+        $empleado = empleado::findOrFail($id);
+
+        return $empleado->servicios->pluck('id')->toArray();
+    }
+
+
+    public function sincronizarServicios(int $id, array $idsServicios)
+    {
+        $empleado = empleado::findOrFail($id);
+
+        $empleado->servicios()->sync($idsServicios);
     }
 }

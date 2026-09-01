@@ -101,7 +101,7 @@
                 <label for="" class="block mb-2 font-semibold ">Estado</label>
                 
                 <select name="estadoEmpleado">
-                    <option value="Activo">Activo</option>
+                    <option value="activo">Activo</option>
                     <option value="inactivo">Inactivo</option>
                 </select>
 

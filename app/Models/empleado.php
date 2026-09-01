@@ -20,4 +20,9 @@ class empleado extends Model
         'horaSalida',
         'estadoEmpleado',
     ];
+
+    public function servicios()
+{
+    return $this->belongsToMany(Servicio::class, 'empleado_servicio');
+}
 }
