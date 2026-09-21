@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class empleado extends Model
+class Empleado extends Model
 {
     protected $table = 'empleados';
 
@@ -22,7 +22,7 @@ class empleado extends Model
     ];
 
     public function servicios()
-{
-    return $this->belongsToMany(Servicio::class, 'empleado_servicio');
-}
+    {
+        return $this->belongsToMany(Servicio::class, 'empleadoServicio');
+    }
 }

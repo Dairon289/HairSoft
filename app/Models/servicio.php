@@ -20,6 +20,11 @@ class servicio extends Model
 
     public function empleados()
     {
-        return $this->belongsToMany(Empleado::class, 'empleado_servicio');
+        return $this->belongsToMany(Empleado::class, 'empleadoServicio');
     }
+
+    public function detalleServicios()
+    {
+        return $this->hasMany(DetalleServicio::class);
+    }   
 }
