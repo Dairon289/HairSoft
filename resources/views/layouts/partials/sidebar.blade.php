@@ -28,8 +28,8 @@
                     ['label' => 'Empleados',    'route' => 'empleados.index',      'icon' => 'users'],
                     ['label' => 'Perfiles/Roles', 'route' => 'roles.index',   'icon' => 'shield'],
                     ['label' => 'Clientes',  'route' => 'cliente.index', 'icon' => 'users'],
-                    ['label' => 'Productos',   'route' => 'producto.index',   'icon' => 'box'],
-                    ['label' => 'Reportes',    'route' => 'reports.index',    'icon' => 'chart'],
+                    ['label' => 'Servicios',   'route' => 'servicio.index',   'icon' => 'service'],
+                    ['label' => 'Citas',    'route' => 'citas.index',    'icon' => 'chart'],
                     ['label' => 'Configuración', 'route' => 'settings.index', 'icon' => 'cog'],
                 ];
             @endphp
