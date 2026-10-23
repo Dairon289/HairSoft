@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Cita;
+use App\Models\servicio;
 
 class CitaRepository
 {
@@ -15,7 +16,7 @@ class CitaRepository
 
      public function buscarPorId(int $idCita): ?Cita
     {
-        return Cita::find($idCita);
+        return Cita::findOrFail($idCita);
     }
 
 
@@ -37,6 +38,28 @@ class CitaRepository
         $cita->update($datosValidos);
 
         return $cita;
+    }
+
+    public function sincronizarServicios(int $id, array $idsNuevos)
+    {
+        $cita = $this->model->findOrFail($id);
+        
+        $idsActuales = $cita->detalleServicios()->pluck('servicio_id')->toArray();
+
+        $idsAEliminar = array_diff($idsActuales, $idsNuevos);
+        $idsAAgregar = array_diff($idsNuevos, $idsActuales);
+
+        $cita->detalleServicios()->whereIn('servicio_id', $idsAEliminar)->delete();
+
+        
+        foreach ($idsAAgregar as $servicioId) {
+            $servicio = servicio::findOrFail($servicioId);
+
+            $cita->detalleServicios()->create([
+                'servicio_id' => $servicioId,
+                'precioServicio' => $servicio->precioServicio,
+            ]);
+        }
     }
 
     public function cancelar(int $id, string $motivo)
