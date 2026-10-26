@@ -30,6 +30,7 @@
                     ['label' => 'Clientes',  'route' => 'cliente.index', 'icon' => 'users'],
                     ['label' => 'Servicios',   'route' => 'servicio.index',   'icon' => 'service'],
                     ['label' => 'Citas',    'route' => 'citas.index',    'icon' => 'chart'],
+                    ['label' => 'Pagos',    'route' => 'pagos.index',    'icon' => 'chart'],
                     ['label' => 'Configuración', 'route' => 'settings.index', 'icon' => 'cog'],
                 ];
             @endphp
