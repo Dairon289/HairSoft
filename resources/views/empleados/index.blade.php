@@ -11,22 +11,22 @@
 
     <div class="container mx-auto mt-10">
 
+
+        <div class="flex justify-between items-center mb-6">
+
+            <h2 class="text-3xl font-bold text-gray-700">
+                Empleados
+            </h2>
+
+            <a href="{{ route ('empleados.create') }}"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+
+                Nuevo empleado(a)
+
+            </a>
+        </div>
+
         <div class="overflow-x-auto">
-
-            <div class="flex justify-between items-center mb-6">
-
-                <h2 class="text-3xl font-bold text-gray-700">
-                    Empleados
-                </h2>
-
-                <a href="{{ route ('empleados.create') }}"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-
-                    Nuevo empleado(a)
-
-                </a>
-
-            </div>
 
             @if(session('success'))
 
@@ -137,14 +137,28 @@
                         <td class="border px-4 py-2">
                             <div class="flex gap-2">
                                 
-                                <a href="{{ route('empleados.edit', $empleados->id)}}" class="bg-red-400 hover:bg-red-600 text-white rounded-lg px-5 py-2">Editar empleado</a>
+                                <a href="{{ route('empleados.edit', $empleados->id) }}"
+                                    title="Editar empleado"
+                                    aria-label="Editar empleado"
+                                    class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2">
+                                    <span class="w-5 h-5" aria-hidden="true">
+                                        @include('layouts.partials.icons', ['icon' => 'pencil'])
+                                    </span>
+                                </a>
 
-            
-
-                                <form action="{{ route('empleados.destroy', $empleados->id)}}" method="post">
+                                <form action="{{ route('empleados.destroy', $empleados->id) }}" method="post"
+                                onsubmit="return confirm('¿Seguro que deseas eliminar este empleado?')"
+                                >
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-red-400 hover:bg-red-600 text-white rounded-lg px-3 py-2">Eliminar empleado</button>
+                                    <button type="submit"
+                                        title="Eliminar empleado"
+                                        aria-label="Eliminar empleado"
+                                        class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-lg p-2">
+                                        <span class="w-5 h-5" aria-hidden="true">
+                                            @include('layouts.partials.icons', ['icon' => 'trash'])
+                                        </span>
+                                    </button>
                                 </form>
                             </div>
                         </td>
