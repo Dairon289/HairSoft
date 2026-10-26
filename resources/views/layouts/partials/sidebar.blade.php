@@ -34,6 +34,13 @@
                     ['label' => 'Configuración', 'route' => 'settings.index', 'icon' => 'cog'],
                 ];
             @endphp
+            
+            @php
+                $links = collect($links)
+                    ->filter(fn ($link) => \Illuminate\Support\Facades\Route::has($link['route']))
+                    ->values()
+                    ->all();
+            @endphp
 
             @foreach ($links as $link)
                 @php
