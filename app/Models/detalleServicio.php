@@ -11,6 +11,7 @@ class DetalleServicio extends Model
     protected $fillable = [
         'cita_id',
         'servicio_id',
+        'precioServicio'
     ];
 
     public function cita()
@@ -22,4 +23,8 @@ class DetalleServicio extends Model
     {
         return $this->belongsTo(Servicio::class);
     }
+
+    protected $casts = [
+    'precioServicio' => 'decimal:2',
+];
 }

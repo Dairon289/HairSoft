@@ -12,7 +12,7 @@ class DetalleServicioController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -20,7 +20,7 @@ class DetalleServicioController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -28,7 +28,7 @@ class DetalleServicioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -36,7 +36,7 @@ class DetalleServicioController extends Controller
      */
     public function show(detalleServicio $detalleServicio)
     {
-        //
+        
     }
 
     /**
@@ -44,7 +44,7 @@ class DetalleServicioController extends Controller
      */
     public function edit(detalleServicio $detalleServicio)
     {
-        //
+        
     }
 
     /**
@@ -52,7 +52,7 @@ class DetalleServicioController extends Controller
      */
     public function update(Request $request, detalleServicio $detalleServicio)
     {
-        //
+        
     }
 
     /**
