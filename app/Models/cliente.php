@@ -21,4 +21,16 @@ class Cliente extends Model implements AuthenticatableContract
         'estado',
         'password'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
+
+    public function citas()
+    {
+        return $this->hasMany(Cita::class);
+    }
 }

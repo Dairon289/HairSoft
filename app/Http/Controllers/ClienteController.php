@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\cliente;
 use Illuminate\Http\Request;
 use App\Services\ClienteService;
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\Rule;
 
 class ClienteController extends Controller
 {
@@ -35,7 +37,15 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
-        $datos = $request->all();
+        $datos = $request->validate([
+            'nombre'   => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'correo'   => 'required|email|max:255|unique:clientes,correo',
+            'telefono' => 'required|string|max:255',
+            'rol'      => 'required|in:cliente,administrador',
+            'estado'   => 'required|in:activo,inactivo',
+            'password' => 'required|string|min:8',
+        ]);
 
         $this->cliente_service->guardar($datos);
 
@@ -65,20 +75,43 @@ class ClienteController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        $datos = $request->all();
+        $datos = $request->validate([
+            'nombre'   => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'correo'   => ['required', 'email', 'max:255', Rule::unique('clientes', 'correo')->ignore($id)],
+            'telefono' => 'required|string|max:255',
+            'rol'      => 'required|in:cliente,administrador',
+            'estado'   => 'required|in:activo,inactivo',
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        if (empty($datos['password'])) {
+            unset($datos['password']);
+        }
 
         $this->cliente_service->actualizar($id, $datos);
 
-        return redirect()->route('cliente.index')->with('successedit', 'Cliente actualizado correctamente');
-    }
+        return redirect()->route('cliente.index')->with('success', 'Cliente actualizado correctamente');
+    }   
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(int $id)
     {
-        $this->cliente_service->eliminar($id);
+        try {
+            $this->cliente_service->eliminar($id);
+        } catch (QueryException $e) {
+            report($e);
 
-        return redirect()->route('cliente.index')->with('successdelete', 'Cliente eliminado correctamente');
+            return redirect()->route('cliente.index')
+                ->with('errordelete', 'No se pudo eliminar el cliente por un problema con la base de datos. Inténtalo de nuevo.');
+        } catch (\Exception $e) {
+            return redirect()->route('cliente.index')
+                ->with('errordelete', $e->getMessage());
+        }
+
+        return redirect()->route('cliente.index')
+            ->with('successdelete', 'Cliente eliminado correctamente');
     }
 }

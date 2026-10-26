@@ -34,4 +34,9 @@ class ClienteRepository
         $cliente = cliente::findOrFail($id);
         $cliente->update($datos);
     }
+
+    public function tieneCitas(int $id): bool
+    {
+        return cliente::findOrFail($id)->citas()->exists();
+    }
 }
