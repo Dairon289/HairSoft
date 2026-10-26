@@ -112,14 +112,28 @@
                         <td class="border px-4 py-2">
                             <div class="flex gap-2">
                                 
-                                <a href="{{ route('servicio.edit', $servicio->id)}}" class="bg-red-400 hover:bg-red-600 text-white rounded-lg px-5 py-2">Editar servicio</a>
+                                <a href="{{ route('servicio.edit', $servicio->id) }}"
+                                    title="Editar servicio"
+                                    aria-label="Editar servicio"
+                                    class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2">
+                                    <span class="w-5 h-5" aria-hidden="true">
+                                        @include('layouts.partials.icons', ['icon' => 'pencil'])
+                                    </span>
+                                </a>
 
-            
-
-                                <form action="{{ route('servicio.destroy', $servicio->id)}}" method="post">
+                                <form action="{{ route('servicio.destroy', $servicio->id) }}" method="post"
+                                onsubmit="return confirm('¿Seguro que deseas eliminar este servicio?')"
+                                >
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-red-400 hover:bg-red-600 text-white rounded-lg px-3 py-2">Eliminar servicio</button>
+                                    <button type="submit"
+                                        title="Eliminar servicio"
+                                        aria-label="Eliminar servicio"
+                                        class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-lg p-2">
+                                        <span class="w-5 h-5" aria-hidden="true">
+                                            @include('layouts.partials.icons', ['icon' => 'trash'])
+                                        </span>
+                                    </button>
                                 </form>
                             </div>
                         </td>

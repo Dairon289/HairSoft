@@ -60,6 +60,14 @@
 
             @endif
 
+            @if(session('errordelete'))
+                <div class="mb-4 rounded border border-red-300 bg-red-100 px-4 py-3 text-red-700">
+
+                    {{ session('errordelete') }}
+
+                </div>
+            @endif
+
 
             <table class="min-w-full border border-gray-300">
 
@@ -118,14 +126,28 @@
                         <td class="border px-4 py-2">
                             <div class="flex gap-2">
                                 
-                                <a href="{{ route('cliente.edit', $cliente->id)}}" class="bg-red-400 hover:bg-red-600 text-white rounded-lg px-5 py-2">Editar cliente</a>
+                                <a href="{{ route('cliente.edit', $cliente->id) }}"
+                                    title="Editar cliente"
+                                    aria-label="Editar cliente"
+                                    class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-2">
+                                    <span class="w-5 h-5" aria-hidden="true">
+                                        @include('layouts.partials.icons', ['icon' => 'pencil'])
+                                    </span>
+                                </a>
 
-            
-
-                                <form action="{{ route('cliente.destroy', $cliente->id)}}" method="post">
+                                <form action="{{ route('cliente.destroy', $cliente->id) }}" method="post"
+                                onsubmit="return confirm('¿Seguro que deseas eliminar este cliente?')"
+                                >
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-red-400 hover:bg-red-600 text-white rounded-lg px-3 py-2">Eliminar cliente</button>
+                                    <button type="submit"
+                                        title="Eliminar cliente"
+                                        aria-label="Eliminar cliente"
+                                        class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-lg p-2">
+                                        <span class="w-5 h-5" aria-hidden="true">
+                                            @include('layouts.partials.icons', ['icon' => 'trash'])
+                                        </span>
+                                    </button>
                                 </form>
                             </div>
                         </td>

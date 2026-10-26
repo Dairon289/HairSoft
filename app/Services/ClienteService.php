@@ -29,8 +29,18 @@ class ClienteService
         $this->clienteRepository->guardar($datos);
     }
 
-    public function eliminar(int $id)
+    public function eliminar(int $id): void
     {
+        $cliente = $this->clienteRepository->buscarporid($id);
+
+        if (!$cliente) {
+            throw new \Exception('El cliente no existe.');
+        }
+
+        if ($this->clienteRepository->tieneCitas($id)) {
+            throw new \Exception('No se puede eliminar el cliente porque tiene citas registradas. Puedes cambiar su estado a inactivo para conservar el historial.');
+        }
+
         $this->clienteRepository->eliminar($id);
     }
 

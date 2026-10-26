@@ -95,18 +95,29 @@
                 <label class="block mb-2 font-semibold">Servicios</label>
 
                 @foreach($servicios as $servicio)
-                    <div>
-                        <input type="checkbox" name="servicios[]" value="{{ $servicio->id }}" id="servicio_{{ $servicio->id }}">
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox"
+                            name="servicios[]"
+                            value="{{ $servicio->id }}"
+                            id="servicio_{{ $servicio->id }}"
+                            class="mr-2"
+                            @checked(in_array($servicio->id, old('servicios', [])))>
 
                         <label for="servicio_{{ $servicio->id }}">
-                            {{ $servicio->nombreServicio}}
+                            {{ $servicio->nombreServicio }} - ${{ number_format($servicio->precioServicio, 0, ',', '.') }}
                         </label>
                     </div>
                 @endforeach
+
+                @error('servicios')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
     
 
             <div>
+                <a href="{{ route('citas.index') }}" class="bg-blue-600 hover:bg-blue-600 text-white rounded px-5 py-3">Volver</a>
+                
                 <button type="submit" class="bg-green-500 hover:bg-green-600 text-white rounded px-5 py-2">
                     Guardar Cita
                 </button>

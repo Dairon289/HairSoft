@@ -1,27 +1,22 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layouts.app')
 
-<head>
 
-    <meta charset="UTF-8">
+@section('title')
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    Editar Servicios 
+    
+@endsection
 
-    <title>Editar Servicio</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+@section('content')
 
-</head>
+<div class="container mx-auto mt-4">
 
-<body class="bg-gray-100">
+    <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
 
-<div class="container mx-auto mt-10">
+        <h2 class="text-2xl font-bold text-center mb-4">
 
-    <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-8">
-
-        <h2 class="text-3xl font-bold text-center mb-6">
-
-            Nuevo Servicio
+            Editar Servicio
         </h2>
 
 
@@ -92,6 +87,4 @@
 
 </div>
 
-</body>
-
-</html>
+@endsection
