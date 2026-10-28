@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Cita;
 use App\Models\servicio;
+use Carbon\Carbon;
 
 class CitaRepository
 {
@@ -14,16 +15,27 @@ class CitaRepository
         $this->model = $model;
     }
 
-     public function buscarPorId(int $idCita): ?Cita
+    public function buscarPorId(int $idCita): ?Cita
     {
         return Cita::findOrFail($idCita);
     }
 
 
-    public function obtenerTodas()
+    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null)
     {
         return $this->model
             ->with(['cliente', 'detalleServicios.servicio'])
+            ->when($desde, function ($query) use ($desde) {
+                $query->where('fecha_programada', '>=', Carbon::parse($desde)->startOfDay());
+            })
+            ->when($hasta, function ($query) use ($hasta) {
+                $query->where('fecha_programada', '<=', Carbon::parse($hasta)->endOfDay());
+            })
+            ->when($servicioId, function ($query) use ($servicioId) {
+                $query->whereHas('detalleServicios', function ($detalle) use ($servicioId) {
+                    $detalle->where('servicio_id', $servicioId);
+                });
+            })
             ->get();
     }
 
