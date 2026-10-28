@@ -183,10 +183,10 @@ class CitaService
         }
     }
 
-    public function obtenerTodas()
+    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null)
     {
-        return $this->citaRepository->obtenerTodas();
-    }   
+        return $this->citaRepository->obtenerTodas($desde, $hasta, $servicioId);
+    }  
 
 
     public function obtenerPorId(int $id)

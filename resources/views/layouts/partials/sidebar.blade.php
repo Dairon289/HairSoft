@@ -32,6 +32,7 @@
                     ['label' => 'Citas',    'route' => 'citas.index',    'icon' => 'chart'],
                     ['label' => 'Pagos',    'route' => 'pagos.index',    'icon' => 'chart'],
                     ['label' => 'Configuración', 'route' => 'settings.index', 'icon' => 'cog'],
+                    ['label' => 'Reportes', 'route' => 'reportes.ingresos', 'icon' => 'chart'],
                 ];
             @endphp
             

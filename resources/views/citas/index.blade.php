@@ -57,6 +57,50 @@
             </div>
         @endif
 
+                @if($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="GET" action="{{ route('citas.index') }}" class="flex flex-wrap items-end gap-4 mb-6">
+            <div>
+                <label for="desde" class="block font-semibold mb-1">Desde</label>
+                <input type="date" name="desde" id="desde" value="{{ $desde }}"
+                       class="border border-gray-200 rounded-lg px-4 py-2">
+            </div>
+            <div>
+                <label for="hasta" class="block font-semibold mb-1">Hasta</label>
+                <input type="date" name="hasta" id="hasta" value="{{ $hasta }}"
+                       class="border border-gray-200 rounded-lg px-4 py-2">
+            </div>
+            <div>
+                <label for="servicio_id" class="block font-semibold mb-1">Servicio</label>
+                <select name="servicio_id" id="servicio_id"
+                        class="border border-gray-200 rounded-lg px-4 py-2">
+                    <option value="">Todos</option>
+                    @foreach($servicios as $servicio)
+                        <option value="{{ $servicio->id }}"
+                            {{ (string) $servicioId === (string) $servicio->id ? 'selected' : '' }}>
+                            {{ $servicio->nombreServicio }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg">
+                Filtrar
+            </button>
+            <a href="{{ route('citas.index') }}"
+               class="border border-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg">
+                Limpiar
+            </a>
+        </form>
+
         
         <div class="overflow-x-auto">
 

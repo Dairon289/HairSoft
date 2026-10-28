@@ -38,11 +38,22 @@ class CitaController extends Controller
         return view('citas.create', compact('clientes', 'empleados', 'servicios'));
     }
 
-    public function index()
+    public function index(Request $request, ServicioService $servicioService)
     {
-        $citas = $this->citaService->obtenerTodas();
+        $filtros = $request->validate([
+            'desde'       => 'nullable|date',
+            'hasta'       => 'nullable|date|after_or_equal:desde',
+            'servicio_id' => 'nullable|exists:servicios,id',
+        ]);
 
-        return view('citas.index', compact('citas'));
+        $desde = $filtros['desde'] ?? null;
+        $hasta = $filtros['hasta'] ?? null;
+        $servicioId = isset($filtros['servicio_id']) ? (int) $filtros['servicio_id'] : null;
+
+        $citas = $this->citaService->obtenerTodas($desde, $hasta, $servicioId);
+        $servicios = $servicioService->listarTodo();
+
+        return view('citas.index', compact('citas', 'servicios', 'desde', 'hasta', 'servicioId'));
     }
 
     public function store(Request $request)

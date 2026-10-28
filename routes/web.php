@@ -6,6 +6,7 @@ use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\PagoController;
+use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ServicioController;
 
 Route::get('/admin/dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
@@ -44,3 +45,5 @@ Route::get('/admin/dashboard', [DashboardController::class, 'adminIndex'])->name
     Route::patch('pagos/{pago}/anular', [PagoController::class, 'anular'])
         ->name('pagos.anular');
         //->middleware('modulo:pagos')
+    Route::get('reportes/ingresos', [ReporteController::class, 'ingresos'])
+        ->name('reportes.ingresos');
