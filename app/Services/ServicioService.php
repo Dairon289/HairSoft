@@ -29,6 +29,14 @@ class ServicioService
 
     public function eliminar(int $id)
     {
+        if ($this->servicioRepository->tieneCitasActivasFuturas($id)) {
+            throw new Exception('No se puede eliminar el servicio porque tiene citas pendientes o confirmadas programadas a futuro.');
+        }
+
+        if ($this->servicioRepository->tieneCitas($id)) {
+            throw new Exception('No se puede eliminar el servicio porque ya forma parte del historial de citas. Cambia su estado en lugar de eliminarlo.');
+        }
+
         $this->servicioRepository->eliminar($id);
     }
 

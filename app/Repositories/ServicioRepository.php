@@ -34,4 +34,23 @@ class ServicioRepository
         $servicio = servicio::findOrFail($id);
         $servicio->update($datos);
     }
+
+    public function tieneCitas(int $id): bool
+    {
+        $servicio = servicio::findOrFail($id);
+
+        return $servicio->detalleServicios()->exists();
+    }
+
+    public function tieneCitasActivasFuturas(int $id): bool
+    {
+        $servicio = servicio::findOrFail($id);
+
+        return $servicio->detalleServicios()
+            ->whereHas('cita', function ($query) {
+                $query->whereIn('estado', ['pendiente', 'confirmada'])
+                    ->where('fecha_programada', '>=', now()->startOfDay());
+            })
+            ->exists();
+    }
 }
