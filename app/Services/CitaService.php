@@ -193,8 +193,11 @@ class CitaService
         );
 
         if ($existeCruce) {
+            $horaInicioTexto = Carbon::createFromFormat('H:i', config('mantenimiento.inicio'))->format('h:i A');
+            $horaFinTexto = Carbon::createFromFormat('H:i', config('mantenimiento.fin'))->format('h:i A');
+
             throw ValidationException::withMessages([
-                'fecha_programada' => 'El empleado ya tiene una cita programada en ese horario.',
+                'fecha_programada' => "La cita cae dentro del horario de mantenimiento del sistema ({$horaInicioTexto} a {$horaFinTexto}). Elige otro horario.",
             ]);
         }
     }
