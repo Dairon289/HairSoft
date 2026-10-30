@@ -39,6 +39,7 @@ class CitaService
         }
 
         $fechaFinProgramada = $fechaProgramada->copy()->addMinutes($duracionTotal);
+        $this->validarFueraDeMantenimiento($fechaProgramada, $fechaFinProgramada);
 
         $this->validarCruceHorario(
             $datos['empleado_id'],
@@ -73,6 +74,17 @@ class CitaService
 
         $this->validarAvanceDeEstado($cita->estado, $datosValidos['estado']);
         $this->validarFechasSegunEstado($datosValidos);
+
+        if (!empty($datosValidos['fecha_programada'])) {
+            $nuevaFecha = Carbon::parse($datosValidos['fecha_programada']);
+
+            if (! $nuevaFecha->equalTo($cita->fecha_programada)) {
+                $serviciosEditados = servicio::whereIn('id', $datosValidos['servicios'])->get();
+                $nuevaFechaFin = $nuevaFecha->copy()->addMinutes($this->calcularDuracionMinutos($serviciosEditados));
+
+                $this->validarFueraDeMantenimiento($nuevaFecha, $nuevaFechaFin);
+            }
+        }
 
         if (!empty($datosValidos['empleado_id']) && !empty($datosValidos['fecha_inicio']) && !empty($datosValidos['fecha_fin'])) {
             $this->validarCruceHorario(
@@ -160,6 +172,9 @@ class CitaService
         if (in_array($cita->estado, ['iniciada', 'finalizada', 'cancelada'])) {
             throw new \Exception('No se puede cancelar una cita en estado: ' . $cita->estado);
         }
+        if ($cita->fecha_programada->isToday()) {
+            throw new \Exception('No se puede cancelar una cita programada para hoy.');
+        }
         $this->citaRepository->actualizar($idCita, [
             'estado' => 'cancelada',
             'fechaCancelacion' => now(),
@@ -168,11 +183,12 @@ class CitaService
     }  
 
 
-    private function validarCruceHorario($empleadoId, $fechaProgramada, $citaIdExcluir = null)
+    private function validarCruceHorario($empleadoId, $inicio, $fin, $citaIdExcluir = null)
     {
         $existeCruce = $this->citaRepository->existeCruceHorario(
             $empleadoId,
-            $fechaProgramada,
+            $inicio,
+            $fin,
             $citaIdExcluir
         );
 
@@ -183,20 +199,63 @@ class CitaService
         }
     }
 
-    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null)
+    private function calcularDuracionMinutos($servicios): int
     {
-        return $this->citaRepository->obtenerTodas($desde, $hasta, $servicioId);
-    }  
+        $total = 0;
 
+        foreach ($servicios as $servicio) {
+            $duracion = Carbon::parse($servicio->duracionServicio);
+            $total += ($duracion->hour * 60) + $duracion->minute;
+        }
+
+        return $total;
+    }
+
+    private function validarFueraDeMantenimiento(Carbon $inicio, Carbon $fin): void
+    {
+        [$horaInicio, $minutoInicio] = array_map('intval', explode(':', config('mantenimiento.inicio')));
+        [$horaFin, $minutoFin] = array_map('intval', explode(':', config('mantenimiento.fin')));
+
+        $dia = $inicio->copy()->subDay()->startOfDay();
+        $ultimoDia = $fin->copy()->startOfDay();
+
+        while ($dia->lte($ultimoDia)) {
+            $franjaInicio = $dia->copy()->setTime($horaInicio, $minutoInicio);
+            $franjaFin = $dia->copy()->setTime($horaFin, $minutoFin);
+
+            if ($franjaFin->lte($franjaInicio)) {
+                $franjaFin->addDay();
+            }
+
+            if ($inicio->lt($franjaFin) && $fin->gt($franjaInicio)) {
+                throw ValidationException::withMessages([
+                    'fecha_programada' => 'La cita cae dentro del horario de mantenimiento del sistema ('
+                        . config('mantenimiento.inicio') . ' a ' . config('mantenimiento.fin')
+                        . '). Elige otro horario.',
+                ]);
+            }
+
+            $dia->addDay();
+        }
+    }
+
+    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null, bool $soloPagoPendiente = false)
+    {
+        return $this->citaRepository->obtenerTodas($desde, $hasta, $servicioId, $soloPagoPendiente);
+    }
 
     public function obtenerPorId(int $id)
     {
         return $this->citaRepository->buscarPorId($id)->load('detalleServicios');
     }
 
-    public function puedeCancelarse(Cita $cita): bool 
+    public function puedeCancelarse(Cita $cita): bool
     {
-        return !in_array($cita->estado, ['iniciada', 'finalizada', 'cancelada']); 
+        if (in_array($cita->estado, ['iniciada', 'finalizada', 'cancelada'])) {
+            return false;
+        }
+
+        return ! $cita->fecha_programada->isToday();
     }
 
     public function actualizarMotivo(int $id, string $motivo)

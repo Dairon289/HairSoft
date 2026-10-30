@@ -21,7 +21,7 @@ class CitaRepository
     }
 
 
-    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null)
+    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null, bool $soloPagoPendiente = false)
     {
         return $this->model
             ->with(['cliente', 'detalleServicios.servicio'])
@@ -36,6 +36,11 @@ class CitaRepository
                     $detalle->where('servicio_id', $servicioId);
                 });
             })
+            ->when($soloPagoPendiente, function ($query) {
+                $query->pagables();
+            })
+            ->orderByDesc('fecha_programada')
+            ->orderByDesc('id')
             ->get();
     }
 
@@ -87,18 +92,18 @@ class CitaRepository
         return $cita;
     }
 
-    public function existeCruceHorario($empleadoId, $fechaInicio, $fechaFin, $citaIdExcluir = null)
+    public function existeCruceHorario($empleadoId, $inicio, $fin, $citaIdExcluir = null)
     {
         $query = $this->model
             ->where('empleado_id', $empleadoId)
             ->where('estado', '!=', 'cancelada')
-            ->where('fecha_inicio', '<', $fechaFin)
-            ->where('fecha_fin', '>', $fechaInicio);
+            ->whereRaw('COALESCE(fecha_inicio, fecha_programada) < ?', [$fin])
+            ->whereRaw('COALESCE(fecha_fin, fecha_fin_programada) > ?', [$inicio]);
 
         if ($citaIdExcluir !== null) {
             $query->where('id', '!=', $citaIdExcluir);
         }
 
         return $query->exists();
-    }   
+    }
 }

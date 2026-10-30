@@ -91,6 +91,13 @@
                     @endforeach
                 </select>
             </div>
+            
+            <div class="flex items-center gap-2 pb-2">
+                <input type="checkbox" name="pago_pendiente" id="pago_pendiente" value="1"
+                       {{ $pagoPendiente ? 'checked' : '' }}>
+                <label for="pago_pendiente" class="font-semibold">Solo con pago pendiente</label>
+            </div>
+            
             <button type="submit"
                     class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg">
                 Filtrar
@@ -231,7 +238,7 @@
                                         </span>
                                     </a>
 
-                                    @if(in_array($cita->estado, ['pendiente', 'confirmada']))
+                                    @if(in_array($cita->estado, ['pendiente', 'confirmada']) && ! $cita->fecha_programada->isToday())
                                         <a href="{{ route('citas.cancelar.form', $cita) }}"
                                         title="Cancelar cita"
                                         aria-label="Cancelar cita"
