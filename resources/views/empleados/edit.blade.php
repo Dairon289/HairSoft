@@ -60,13 +60,6 @@
                         class="w-full border rounded px-3 py-2 @error('telefonoEmpleado') border-red-500 @enderror">
                 </div>
 
-                <div class="mb-4 md:col-span-2">
-                    <label for="especialidad" class="block mb-1 font-semibold">Especialidad</label>
-                    <input type="text" id="especialidad" name="especialidad"
-                        value="{{ old('especialidad', $empleado->especialidad) }}"
-                        class="w-full border rounded px-3 py-2 @error('especialidad') border-red-500 @enderror">
-                </div>
-
                 <div class="mb-4">
                     <label for="disponibilidad" class="block mb-1 font-semibold">Disponibilidad</label>
                     <select id="disponibilidad" name="disponibilidad" class="w-full border rounded px-3 py-2">
@@ -83,17 +76,36 @@
                     </select>
                 </div>
 
-                <div class="mb-4 md:col-span-2">
-                    <p class="block mb-1 font-semibold">Servicios Ofrecidos</p>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 border rounded px-3 py-2">
-                        @foreach ($servicios as $servicio)
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" name="servicios[]" value="{{ $servicio->id }}"
-                                    id="servicio_{{ $servicio->id }}"
-                                    @checked(in_array($servicio->id, old('servicios', $serviciosAsignados)))>
-                                <label for="servicio_{{ $servicio->id }}">{{ $servicio->nombreServicio }}</label>
-                            </div>
-                        @endforeach
+                <div class="mb-4 md:col-span-2"
+                     x-data="selectorServiciosEmpleado(@js($servicios->map(fn ($s) => ['id' => $s->id, 'nombre' => $s->nombreServicio])->values()), @js(old('servicios', $serviciosAsignados)))">
+                    <label class="block mb-1 font-semibold">Servicios Ofrecidos</label>
+
+                    <div class="relative">
+                        <button type="button" @click="abierto = !abierto"
+                                class="w-full border rounded px-3 py-2 text-left flex justify-between items-center bg-white @error('servicios') border-red-500 @enderror">
+                            <span x-text="elegidos.length ? elegidos.length + ' servicio(s) seleccionado(s)' : 'Seleccionar servicios'"></span>
+                            <span aria-hidden="true">&#9662;</span>
+                        </button>
+
+                        <div x-show="abierto" @click.outside="abierto = false" style="display: none;"
+                             class="absolute z-10 mt-1 w-full bg-white border rounded shadow max-h-60 overflow-y-auto">
+                            @foreach($servicios as $servicio)
+                                <label class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer">
+                                    <input type="checkbox" name="servicios[]" value="{{ $servicio->id }}"
+                                           x-model="seleccionados" class="mr-2">
+                                    {{ $servicio->nombreServicio }}
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <template x-for="s in elegidos" :key="s.id">
+                            <span class="inline-flex items-center bg-blue-100 text-blue-800 rounded px-2 py-1 text-sm">
+                                <span x-text="s.nombre"></span>
+                                <button type="button" @click="quitar(s.id)" class="ml-2 font-bold" aria-label="Quitar servicio">&times;</button>
+                            </span>
+                        </template>
                     </div>
                 </div>
                 
@@ -112,5 +124,20 @@
 
     </div>
 </div>
+<script>
+    function selectorServiciosEmpleado(servicios, seleccionados) {
+        return {
+            abierto: false,
+            servicios: servicios,
+            seleccionados: seleccionados.map(String),
+            get elegidos() {
+                return this.servicios.filter(s => this.seleccionados.includes(String(s.id)));
+            },
+            quitar(id) {
+                this.seleccionados = this.seleccionados.filter(x => x !== String(id));
+            }
+        };
+    }
+</script>
 
 @endsection

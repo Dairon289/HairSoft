@@ -79,8 +79,12 @@ class ServicioController extends Controller
      */
     public function destroy(int $id)
     {
-        $this->servicio_service->eliminar($id);
+        try {
+            $this->servicio_service->eliminar($id);
+        } catch (\Exception $e) {
+            return redirect()->route('servicio.index')->with('errordelete', $e->getMessage());
+        }
 
-        return redirect()->route('servicio.index')->with('successdelete', 'Empleado eliminado correctamente');
+        return redirect()->route('servicio.index')->with('successdelete', 'Servicio eliminado correctamente');
     }
 }

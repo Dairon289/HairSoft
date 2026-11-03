@@ -34,6 +34,15 @@
         </div>
 
         <div class="mb-6">
+            <label class="block font-semibold mb-2">Fecha programada</label>
+            <input type="text"
+                value="{{ $cita->fecha_programada->format('d/m/Y h:i A') }}"
+                disabled
+                class="w-full border border-gray-200 rounded-lg px-4 py-3 bg-gray-50 text-gray-500"
+            >
+        </div>
+
+        <div class="mb-6">
             <label class="block font-semibold mb-2">Estado de la cita</label>
             <input type="text"
                 value="{{ $cita->estado }}"

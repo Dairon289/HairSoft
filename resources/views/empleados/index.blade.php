@@ -78,7 +78,7 @@
                         </th>
 
                         <th class="border px-4 py-2">
-                            Especialidad
+                            Servicios
                         </th>
 
                         <th class="border px-4 py-2">
@@ -125,7 +125,7 @@
                         <td class="border px-4 py-2">{{ $empleados->id }}</td>
                         <td class="border px-4 py-2">{{ $empleados->nombreEmpleado}}</td>
                         <td class="border px-4 py-2">{{ $empleados->apellidoEmpleado}}</td>
-                        <td class="border px-4 py-2">{{ $empleados->especialidad}}</td>
+                        <td class="border px-4 py-2">{{ $empleados->servicios->pluck('nombreServicio')->implode(', ') ?: 'Sin servicios' }}</td>
                         <td class="border px-4 py-2">{{ $empleados->correoEmpleado}}</td>
                         <td class="border px-4 py-2">{{ $empleados->telefonoEmpleado}}</td>
                         <td class="border px-4 py-2">{{ $empleados->disponibilidad}}</td>

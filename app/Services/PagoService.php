@@ -37,7 +37,7 @@ class PagoService
             ]);
         }
 
-        if ($cita->pago()->exists()) {
+        if ($cita->pago()->where('estado_pago', '!=', 'anulado')->exists()) {
             throw ValidationException::withMessages([
                 'cita_id' => 'Esta cita ya tiene un pago registrado.',
             ]);

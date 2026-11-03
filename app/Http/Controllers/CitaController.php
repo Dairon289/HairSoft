@@ -41,19 +41,21 @@ class CitaController extends Controller
     public function index(Request $request, ServicioService $servicioService)
     {
         $filtros = $request->validate([
-            'desde'       => 'nullable|date',
-            'hasta'       => 'nullable|date|after_or_equal:desde',
-            'servicio_id' => 'nullable|exists:servicios,id',
+            'desde'         => 'nullable|date',
+            'hasta'         => 'nullable|date|after_or_equal:desde',
+            'servicio_id'   => 'nullable|exists:servicios,id',
+            'pago_pendiente' => 'nullable|boolean',
         ]);
 
         $desde = $filtros['desde'] ?? null;
         $hasta = $filtros['hasta'] ?? null;
         $servicioId = isset($filtros['servicio_id']) ? (int) $filtros['servicio_id'] : null;
+        $pagoPendiente = $request->boolean('pago_pendiente');
 
-        $citas = $this->citaService->obtenerTodas($desde, $hasta, $servicioId);
+        $citas = $this->citaService->obtenerTodas($desde, $hasta, $servicioId, $pagoPendiente);
         $servicios = $servicioService->listarTodo();
 
-        return view('citas.index', compact('citas', 'servicios', 'desde', 'hasta', 'servicioId'));
+        return view('citas.index', compact('citas', 'servicios', 'desde', 'hasta', 'servicioId', 'pagoPendiente'));
     }
 
     public function store(Request $request)
@@ -129,7 +131,7 @@ class CitaController extends Controller
         } catch (\Exception $e) {
             return redirect()
                 ->route('citas.index')
-                ->with('error', $e->getMessage());
+                ->with('error', 'Esta cita no se puede cancelar: ya inició, finalizó, fue cancelada o está programada para hoy.');
         }
 
         return redirect()

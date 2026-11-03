@@ -66,7 +66,9 @@ class Cita extends Model
 
     public function scopePagables($query)
     {
-        return $query->finalizadas()->doesntHave('pago');
+        return $query->finalizadas()->whereDoesntHave('pago', function ($pago) {
+            $pago->where('estado_pago', '!=', 'anulado');
+        });
     }
 }   
 

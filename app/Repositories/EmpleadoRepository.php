@@ -10,13 +10,13 @@ class EmpleadoRepository
 
     public function listarTodo()
     {
-        return empleado::all();
+        return empleado::with('servicios')->get();
     }
 
 
     public function guardar(array $datos)
     {
-       empleado::create($datos);  
+        return empleado::create($datos);
     }
     
     public function eliminar(int $id)

@@ -69,23 +69,23 @@
 
             <div class="mb-4">
                 <label for="fecha_programada" class="block mb-1 font-semibold">Fecha programada</label>
-                <input type="datetime-local" id="fecha_programada" name="fecha_programada"
-                    value="{{ old('fecha_programada', $citas->fecha_programada?->format('Y-m-d\TH:i')) }}"
-                    class="w-full border rounded px-3 py-2" required>
+                <input type="text" id="fecha_programada" name="fecha_programada"
+                    value="{{ old('fecha_programada', $citas->fecha_programada?->format('Y-m-d H:i')) }}"
+                    class="selector-fecha-hora w-full border rounded px-3 py-2" required>
             </div>
 
             <div class="mb-4">
                 <label for="fecha_inicio" class="block mb-1 font-semibold">Fecha de Inicio</label>
-                <input type="datetime-local" id="fecha_inicio" name="fecha_inicio"
-                    value="{{ old('fecha_inicio', $citas->fecha_inicio?->format('Y-m-d\TH:i')) }}"
-                    class="w-full border rounded px-3 py-2">
+                <input type="text" id="fecha_inicio" name="fecha_inicio"
+                    value="{{ old('fecha_inicio', $citas->fecha_inicio?->format('Y-m-d H:i')) }}"
+                    class="selector-fecha-hora w-full border rounded px-3 py-2">
             </div>
 
             <div class="mb-4">
                 <label for="fecha_fin" class="block mb-1 font-semibold">Fecha fin</label>
-                <input type="datetime-local" id="fecha_fin" name="fecha_fin"
-                    value="{{ old('fecha_fin', $citas->fecha_fin?->format('Y-m-d\TH:i')) }}"
-                    class="w-full border rounded px-3 py-2">
+                <input type="text" id="fecha_fin" name="fecha_fin"
+                    value="{{ old('fecha_fin', $citas->fecha_fin?->format('Y-m-d H:i')) }}"
+                    class="selector-fecha-hora w-full border rounded px-3 py-2">
             </div>
 
             <div class="mb-4">
@@ -114,20 +114,70 @@
                 $seleccionados = old('servicios', $citas->detalleServicios->pluck('servicio_id')->toArray());
             @endphp
 
-            <div class="mb-4 md:col-span-2">
+                        @php
+                $catalogoServicios = $servicios->map(fn ($s) => [
+                    'id' => $s->id,
+                    'nombre' => $s->nombreServicio,
+                    'precio' => $s->precioServicio,
+                ])->values();
+            @endphp
+
+            <script>
+                function selectorServicios(servicios, seleccionados) {
+                    return {
+                        abierto: false,
+                        servicios: servicios,
+                        seleccionados: seleccionados.map(String),
+                        get elegidos() {
+                            return this.servicios.filter(s => this.seleccionados.includes(String(s.id)));
+                        },
+                        get total() {
+                            return this.elegidos.reduce((suma, s) => suma + Number(s.precio), 0);
+                        },
+                        formato(valor) {
+                            return '$' + Number(valor).toLocaleString('es-CO', { maximumFractionDigits: 0 });
+                        },
+                        quitar(id) {
+                            this.seleccionados = this.seleccionados.filter(x => x !== String(id));
+                        }
+                    };
+                }
+            </script>
+
+            <div class="mb-4" x-data="selectorServicios(@js($catalogoServicios), @js($seleccionados))">
                 <p class="block mb-1 font-semibold">Servicios</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 border rounded px-3 py-2">
-                    @foreach($servicios as $servicio)
-                        <div class="flex items-center">
-                            <input type="checkbox" name="servicios[]" value="{{ $servicio->id }}"
-                                id="servicio_{{ $servicio->id }}" class="mr-2"
-                                @checked(in_array($servicio->id, $seleccionados))>
-                            <label for="servicio_{{ $servicio->id }}">
+
+                <div class="relative">
+                    <button type="button" @click="abierto = !abierto"
+                            class="w-full border rounded px-3 py-2 text-left flex justify-between items-center bg-white">
+                        <span x-text="elegidos.length ? elegidos.length + ' servicio(s) seleccionado(s)' : 'Seleccionar servicios'"></span>
+                        <span aria-hidden="true">▾</span>
+                    </button>
+
+                    <div x-show="abierto" @click.outside="abierto = false" style="display: none;"
+                         class="absolute z-10 mt-1 w-full bg-white border rounded shadow max-h-60 overflow-y-auto">
+                        @foreach($servicios as $servicio)
+                            <label class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" name="servicios[]" value="{{ $servicio->id }}"
+                                       x-model="seleccionados" class="mr-2">
                                 {{ $servicio->nombreServicio }} - ${{ number_format($servicio->precioServicio, 0, ',', '.') }}
                             </label>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
+
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <template x-for="s in elegidos" :key="s.id">
+                        <span class="inline-flex items-center bg-blue-100 text-blue-800 rounded px-2 py-1 text-sm">
+                            <span x-text="s.nombre + ' - ' + formato(s.precio)"></span>
+                            <button type="button" @click="quitar(s.id)" class="ml-2 font-bold" aria-label="Quitar servicio">×</button>
+                        </span>
+                    </template>
+                </div>
+
+                <p class="mt-3 font-semibold">
+                    Total a pagar: <span x-text="formato(total)"></span>
+                </p>
             </div>
 
             <div>
@@ -143,5 +193,22 @@
     </div>
 
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/es.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        flatpickr('.selector-fecha-hora', {
+            locale: 'es',
+            enableTime: true,
+            time_24hr: false,
+            minuteIncrement: 1,
+            dateFormat: 'Y-m-d H:i',
+            altInput: true,
+            altFormat: 'd/m/Y h:i K',
+            allowInput: true
+        });
+    });
+</script>
 
 @endsection
