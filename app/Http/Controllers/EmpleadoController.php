@@ -30,7 +30,9 @@ class EmpleadoController extends Controller
      */
     public function create()
     {
-        return view('empleados.create');
+        $servicios = $this->servicio_service->listarTodo();
+
+        return view('empleados.create', compact('servicios'));
     }
 
     /**
@@ -38,13 +40,15 @@ class EmpleadoController extends Controller
      */
     public function store(Request $request)
     {
-        $datos = $request->all();
+        $this->validarServicios($request);
 
-        $this->empleado_service->guardar($datos);
+        $datos = $request->except('servicios');
+        $idsServicios = $request->input('servicios', []);
+
+        $this->empleado_service->guardar($datos, $idsServicios);
 
         return redirect()->route('empleados.index')->with('success', 'Empleado creado correctamente');
     }
-
     /**
      * Display the specified resource.
      */
@@ -70,6 +74,8 @@ class EmpleadoController extends Controller
     
     public function update(Request $request, int $id)
     {
+        $this->validarServicios($request);
+
         $datos = $request->except('servicios');
         $idsServicios = $request->input('servicios', []);
 
@@ -87,5 +93,17 @@ class EmpleadoController extends Controller
         $this->empleado_service->eliminar($id);
 
         return redirect()->route('empleados.index')->with('successdelete', 'Empleado eliminado correctamente');
+    }
+    
+    private function validarServicios(Request $request): void
+    {
+        $request->validate([
+            'servicios'   => 'required|array|min:1',
+            'servicios.*' => 'exists:servicios,id',
+        ], [
+            'servicios.required' => 'Selecciona al menos un servicio que ofrece el empleado.',
+            'servicios.min'      => 'Selecciona al menos un servicio que ofrece el empleado.',
+            'servicios.*.exists' => 'Uno de los servicios seleccionados no existe.',
+        ]);
     }
 }

@@ -5,6 +5,7 @@ use App\Repositories\EmpleadoRepository;
 use Illuminate\Support\Facades\Hash;
 
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class EmpleadoService
 {
@@ -22,9 +23,12 @@ class EmpleadoService
     }
 
 
-    public function guardar(array $datos)
+    public function guardar(array $datos, array $idsServicios)
     {
-        $this->empleadoRepository->guardar($datos);
+        DB::transaction(function () use ($datos, $idsServicios) {
+            $empleado = $this->empleadoRepository->guardar($datos);
+            $this->empleadoRepository->sincronizarServicios($empleado->id, $idsServicios);
+        });
     }
 
     public function eliminar(int $id)

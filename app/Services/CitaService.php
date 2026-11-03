@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Cita;
+use App\Models\Empleado;
 use App\Models\servicio;
 use App\Repositories\CitaRepository;
 use Carbon\Carbon;
@@ -40,6 +41,8 @@ class CitaService
 
         $fechaFinProgramada = $fechaProgramada->copy()->addMinutes($duracionTotal);
         $this->validarFueraDeMantenimiento($fechaProgramada, $fechaFinProgramada);
+        $this->validarEmpleadoOfreceServicios($datos['empleado_id'], $servicios);
+        $this->validarFueraDeMantenimiento($fechaProgramada, $fechaFinProgramada);
 
         $this->validarCruceHorario(
             $datos['empleado_id'],
@@ -75,25 +78,32 @@ class CitaService
         $this->validarAvanceDeEstado($cita->estado, $datosValidos['estado']);
         $this->validarFechasSegunEstado($datosValidos);
 
-        if (!empty($datosValidos['fecha_programada'])) {
-            $nuevaFecha = Carbon::parse($datosValidos['fecha_programada']);
+        $fechaProgramada = Carbon::parse($datosValidos['fecha_programada']);
+        $serviciosEditados = servicio::whereIn('id', $datosValidos['servicios'])->get();
+        $fechaFinProgramada = $fechaProgramada->copy()
+            ->addMinutes($this->calcularDuracionMinutos($serviciosEditados));
 
-            if (! $nuevaFecha->equalTo($cita->fecha_programada)) {
-                $serviciosEditados = servicio::whereIn('id', $datosValidos['servicios'])->get();
-                $nuevaFechaFin = $nuevaFecha->copy()->addMinutes($this->calcularDuracionMinutos($serviciosEditados));
-
-                $this->validarFueraDeMantenimiento($nuevaFecha, $nuevaFechaFin);
-            }
+        if (! $fechaProgramada->equalTo($cita->fecha_programada)) {
+            $this->validarFueraDeMantenimiento($fechaProgramada, $fechaFinProgramada);
         }
 
-        if (!empty($datosValidos['empleado_id']) && !empty($datosValidos['fecha_inicio']) && !empty($datosValidos['fecha_fin'])) {
-            $this->validarCruceHorario(
-                $datosValidos['empleado_id'],
-                $datosValidos['fecha_inicio'],
-                $datosValidos['fecha_fin'],
-                $id
-            );
+        if (!empty($datosValidos['empleado_id'])) {
+            $this->validarEmpleadoOfreceServicios($datosValidos['empleado_id'], $datosValidos['servicios']);
         }
+
+        if (!empty($datosValidos['fecha_inicio']) && !empty($datosValidos['fecha_fin'])) {
+            $inicioCruce = Carbon::parse($datosValidos['fecha_inicio']);
+            $finCruce = Carbon::parse($datosValidos['fecha_fin']);
+        } else {
+            $inicioCruce = $fechaProgramada;
+            $finCruce = $fechaFinProgramada;
+        }
+
+        if (!empty($datosValidos['empleado_id'])) {
+            $this->validarCruceHorario($datosValidos['empleado_id'], $inicioCruce, $finCruce, $id);
+        }
+
+        $datosValidos['fecha_fin_programada'] = $fechaFinProgramada;
 
         $servicios = $datosValidos['servicios'];
         unset($datosValidos['servicios']);
@@ -193,11 +203,22 @@ class CitaService
         );
 
         if ($existeCruce) {
-            $horaInicioTexto = Carbon::createFromFormat('H:i', config('mantenimiento.inicio'))->format('h:i A');
-            $horaFinTexto = Carbon::createFromFormat('H:i', config('mantenimiento.fin'))->format('h:i A');
-
             throw ValidationException::withMessages([
-                'fecha_programada' => "La cita cae dentro del horario de mantenimiento del sistema ({$horaInicioTexto} a {$horaFinTexto}). Elige otro horario.",
+                'fecha_programada' => 'El empleado ya tiene otra cita que se cruza con ese horario. Elige otro horario.',
+            ]);
+        }
+    }
+
+    private function validarEmpleadoOfreceServicios($empleadoId, array $idsServicios): void
+    {
+        $empleado = Empleado::findOrFail($empleadoId);
+
+        $idsQueHace = $empleado->servicios->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $idsPedidos = array_map('intval', $idsServicios);
+
+        if (array_diff($idsPedidos, $idsQueHace)) {
+            throw ValidationException::withMessages([
+                'empleado_id' => 'El empleado seleccionado no ofrece todos los servicios elegidos. Elige otro empleado o cambia los servicios.',
             ]);
         }
     }
@@ -231,10 +252,13 @@ class CitaService
             }
 
             if ($inicio->lt($franjaFin) && $fin->gt($franjaInicio)) {
+                $horaInicioTexto = Carbon::createFromFormat('H:i', config('mantenimiento.inicio'))->format('g:i A');
+                $horaFinTexto = Carbon::createFromFormat('H:i', config('mantenimiento.fin'))->format('g:i A');
+                $citaDesde = $inicio->format('g:i A');
+                $citaHasta = $fin->format('g:i A');
+
                 throw ValidationException::withMessages([
-                    'fecha_programada' => 'La cita cae dentro del horario de mantenimiento del sistema ('
-                        . config('mantenimiento.inicio') . ' a ' . config('mantenimiento.fin')
-                        . '). Elige otro horario.',
+                    'fecha_programada' => "La cita ({$citaDesde} a {$citaHasta}) se cruza con el horario de mantenimiento del sistema ({$horaInicioTexto} a {$horaFinTexto}). Elige otro horario.",
                 ]);
             }
 
