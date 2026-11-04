@@ -40,7 +40,7 @@ class ClienteController extends Controller
         $datos = $request->validate([
             'nombre'   => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
-            'correo'   => 'required|email|max:255|unique:clientes,correo',
+            'correo'   => 'required|email|max:255|unique:clientes,correo|unique:users,email',
             'telefono' => 'required|string|max:255',
             'rol'      => 'required|in:cliente,administrador',
             'estado'   => 'required|in:activo,inactivo',
@@ -78,7 +78,7 @@ class ClienteController extends Controller
         $datos = $request->validate([
             'nombre'   => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
-            'correo'   => ['required', 'email', 'max:255', Rule::unique('clientes', 'correo')->ignore($id)],
+            'correo'   => ['required', 'email', 'max:255', Rule::unique('clientes', 'correo')->ignore($id), Rule::unique('users', 'email')->ignore($id, 'cliente_id')],
             'telefono' => 'required|string|max:255',
             'rol'      => 'required|in:cliente,administrador',
             'estado'   => 'required|in:activo,inactivo',

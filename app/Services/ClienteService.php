@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Repositories\ClienteRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 use Exception;
@@ -24,9 +25,13 @@ class ClienteService
 
     public function guardar(array $datos)
     {
-        $datos['password'] = Hash::make($datos['password']);
+        $passwordPlano = $datos['password'];
+        $datos['password'] = Hash::make($passwordPlano);
 
-        $this->clienteRepository->guardar($datos);
+        DB::transaction(function () use ($datos, $passwordPlano) {
+            $cliente = $this->clienteRepository->guardar($datos);
+            $this->clienteRepository->sincronizarCuenta($cliente, $passwordPlano);
+        });
     }
 
     public function eliminar(int $id): void
@@ -52,12 +57,17 @@ class ClienteService
 
     public function actualizar(int $id, array $datos)
     {
-        if (empty($datos['password'])) {
+        $passwordPlano = $datos['password'] ?? null;
+
+        if (empty($passwordPlano)) {
             unset($datos['password']);
         } else {
-            $datos['password'] = Hash::make($datos['password']);
+            $datos['password'] = Hash::make($passwordPlano);
         }
 
-        $this->clienteRepository->actualizar($id, $datos);
+        DB::transaction(function () use ($id, $datos, $passwordPlano) {
+            $cliente = $this->clienteRepository->actualizar($id, $datos);
+            $this->clienteRepository->sincronizarCuenta($cliente, $passwordPlano);
+        });
     }
 }

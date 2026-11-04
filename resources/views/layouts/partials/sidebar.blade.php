@@ -32,6 +32,12 @@
                     ['label' => 'Citas',    'route' => 'citas.index',    'icon' => 'chart'],
                     ['label' => 'Pagos',    'route' => 'pagos.index',    'icon' => 'chart'],
                     ['label' => 'Configuración', 'route' => 'settings.index', 'icon' => 'cog'],
+                    [
+                        'label' => 'Gestion Usuarios',
+                        'route' => 'seguridad.permisos.index',
+                        'icon' => 'users',
+                        'can' => ['gestionar seguridad'],
+                        ],
                 ];
             @endphp
             
@@ -41,25 +47,30 @@
                     ->values()
                     ->all();
             @endphp
-
             @foreach ($links as $link)
-                @php
+                    @continue(! empty($link['can']) && ! auth()->user()->canAny($link['can']))
+                    @php
                     $active = Route::has($link['route']) && request()->routeIs(explode('.', $link['route'])[0] . '.*');
-                @endphp
-                <a
-                    href="{{ Route::has($link['route']) ? route($link['route']) : '#' }}"
+                    @endphp
+                    <a
+                    href="{{ Route::has($link['route']) ?
+                    route($link['route']) : '#' }}"
                     @if($active) aria-current="page" @endif
-                    class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                        {{ $active
-                            ? 'bg-primary-600 text-white shadow-sm'
-                            : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"
-                >
-                    <span class="w-5 h-5 flex-shrink-0" aria-hidden="true">
-                        @include('layouts.partials.icons', ['icon' => $link['icon']])
+                    class="group flex items-center gap-3 px-3 py-2.5
+                    rounded-lg text-sm font-medium transition-colors
+                    {{ $active
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'text-slate-300 hover:bg-slate-800
+                    hover:text-white' }}"
+                    >
+                    <span class="w-5 h-5 flex-shrink-0" ariahidden="true">
+                    @include('layouts.partials.icons', ['icon' =>
+                    $link['icon']])
                     </span>
                     <span>{{ $link['label'] }}</span>
-                </a>
+                    </a>
             @endforeach
+
         </nav>
 
         {{-- Cerrar sesión --}}
