@@ -9,10 +9,13 @@ use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ServicioController;
 
-Route::get('/admin/dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
+Route::middleware('auth')->group(function () {
+
+
+    Route::get('/admin/dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
     Route::get('/cliente/dashboard', [DashboardController::class, 'index'])->name('cliente.dashboard');
 
-    Route::get('/', [DashboardController::class, 'index']);
+    Route::get('/dashboard', [DashboardController::class, 'index']);    
 
     Route::resource('cliente', ClienteController::class);
     Route::resource('empleados', EmpleadoController::class);
@@ -47,3 +50,6 @@ Route::get('/admin/dashboard', [DashboardController::class, 'adminIndex'])->name
         //->middleware('modulo:pagos')
     Route::get('reportes/ingresos', [ReporteController::class, 'ingresos'])
         ->name('reportes.ingresos');
+
+
+});
