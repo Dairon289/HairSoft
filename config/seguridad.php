@@ -5,6 +5,8 @@ return [
 
     'rol_admin' => 'administrador',
 
+    'rol_cliente' => 'cliente',
+
     'permiso_admin' => 'gestionar seguridad',
 
     'roles_protegidos' => ['administrador'],
@@ -21,6 +23,14 @@ return [
         'edit' => 'editar',
         'update' => 'editar',
         'destroy' => 'eliminar',
+        'formularioAnular' => 'editar',
+        'anular' => 'editar',
+        'factura' => 'ver',
+        'formularioCancelar' => 'cancelar',
+        'cancelar' => 'cancelar',
+        'formularioMotivo' => 'editar',
+        'actualizarMotivo' => 'editar',
+        'ingresos' => 'ver',
     ],
 
     'auditar_prefijos' => ['App\\'],

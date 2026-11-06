@@ -56,7 +56,7 @@
         <div class="flex-1 flex flex-col min-w-0 lg:pl-64">
             @include('layouts.partials.navbar')
 
-            <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <main class="flex-1 bg-slate-50 p-4 sm:p-6 lg:p-8">
                 
                 @if (session('error'))
                     <x-alert type="error" class="mb-6">{{ session('error') }}</x-alert>

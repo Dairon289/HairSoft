@@ -37,17 +37,19 @@
             <form action="{{ route('citas.store') }}" method="POST">
                 @csrf
 
-                <div class="mb-5">
-                    <label for="cliente_id" class="block mb-2 font-semibold">Cliente</label>
-                    <select id="cliente_id" name="cliente_id" required
-                            class="w-full border rounded px-3 py-2 @error('cliente_id') border-red-500 @enderror">
-                        @foreach($clientes as $cliente)
-                            <option value="{{ $cliente->id }}" @selected(old('cliente_id') == $cliente->id)>
-                                {{ $cliente->nombre }} {{ $cliente->apellido }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                @unless($esCliente)
+                    <div class="mb-5">
+                        <label for="cliente_id" class="block mb-2 font-semibold">Cliente</label>
+                        <select id="cliente_id" name="cliente_id" required
+                                class="w-full border rounded px-3 py-2 @error('cliente_id') border-red-500 @enderror">
+                            @foreach($clientes as $cliente)
+                                <option value="{{ $cliente->id }}" @selected(old('cliente_id') == $cliente->id)>
+                                    {{ $cliente->nombre }} {{ $cliente->apellido }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endunless
 
                 <div class="mb-5">
                     <label for="empleado_id" class="block mb-2 font-semibold">Empleado</label>

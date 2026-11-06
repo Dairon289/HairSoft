@@ -266,9 +266,9 @@ class CitaService
         }
     }
 
-    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null, bool $soloPagoPendiente = false)
+    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null, bool $soloPagoPendiente = false, ?int $clienteId = null)
     {
-        return $this->citaRepository->obtenerTodas($desde, $hasta, $servicioId, $soloPagoPendiente);
+        return $this->citaRepository->obtenerTodas($desde, $hasta, $servicioId, $soloPagoPendiente, $clienteId);
     }
 
     public function obtenerPorId(int $id)

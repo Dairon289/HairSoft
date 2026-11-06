@@ -9,6 +9,7 @@ use App\Services\EmpleadoService;
 use App\Services\ServicioService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CitaController extends Controller
 {
@@ -29,13 +30,18 @@ class CitaController extends Controller
         $this->servicioService = $servicioService;
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $clientes = $this->clienteService->listarTodo();
-        $empleados = $this->empleadoService->listarTodo();
-        $servicios = $this->servicioService->listarTodo();
+        $clienteCuenta = $this->clienteDeLaCuenta($request);
+        $esCliente = $clienteCuenta !== null;
 
-        return view('citas.create', compact('clientes', 'empleados', 'servicios'));
+        $clientes = $esCliente ? collect() : $this->clienteService->listarTodo();
+        $empleados = $this->empleadoService->listarTodo();
+        $servicios = $this->servicioService->listarTodo()
+            ->filter(fn ($servicio) => strtolower($servicio->estadoServicio) === 'activo')
+            ->values();
+
+        return view('citas.create', compact('clientes', 'empleados', 'servicios', 'esCliente'));
     }
 
     public function index(Request $request, ServicioService $servicioService)
@@ -51,15 +57,28 @@ class CitaController extends Controller
         $hasta = $filtros['hasta'] ?? null;
         $servicioId = isset($filtros['servicio_id']) ? (int) $filtros['servicio_id'] : null;
         $pagoPendiente = $request->boolean('pago_pendiente');
+        $clienteId = $this->clienteDeLaCuenta($request);
 
-        $citas = $this->citaService->obtenerTodas($desde, $hasta, $servicioId, $pagoPendiente);
+        $citas = $this->citaService->obtenerTodas($desde, $hasta, $servicioId, $pagoPendiente, $clienteId);
         $servicios = $servicioService->listarTodo();
 
         return view('citas.index', compact('citas', 'servicios', 'desde', 'hasta', 'servicioId', 'pagoPendiente'));
     }
 
     public function store(Request $request)
-    {
+    {   
+        
+        $clienteCuenta = $this->clienteDeLaCuenta($request);
+
+        if ($clienteCuenta !== null) {
+            $request->merge([
+                'cliente_id'   => $clienteCuenta,
+                'estado'       => 'pendiente',
+                'fecha_inicio' => null,
+                'fecha_fin'    => null,
+            ]);
+        }
+
         $datosValidados = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'empleado_id' => 'required|exists:empleados,id',
@@ -68,7 +87,11 @@ class CitaController extends Controller
             'fecha_inicio' => 'nullable|date|required_if:estado,iniciada,finalizada',
             'fecha_fin' => 'nullable|date|required_if:estado,finalizada|after:fecha_inicio',
             'servicios' => 'required|array',
-            'servicios.*' => 'exists:servicios,id',
+            'servicios.*' => [
+                Rule::exists('servicios', 'id')->where('estadoServicio', 'activo'),
+            ],
+        ], [
+            'servicios.*.exists' => 'Uno de los servicios seleccionados ya no está disponible. Elige otro e intenta de nuevo.',
         ]);
 
         $this->citaService->create($datosValidados);
@@ -96,9 +119,8 @@ class CitaController extends Controller
     }
 
     public function update(Request $request, int $id)
-    {   
+    {
         $datosValidados = $request->validate([
-            
             'cliente_id' => 'required|exists:clientes,id',
             'empleado_id' => 'required|exists:empleados,id',
             'estado' => 'required|in:pendiente,confirmada,iniciada,finalizada',
@@ -123,7 +145,7 @@ class CitaController extends Controller
     public function cancelar(Request $request, Cita $cita): RedirectResponse
     {
         $datos = $request->validate([
-            'motivoCancelacion' => 'required|string|min:5|max:100', 
+            'motivoCancelacion' => 'required|string|min:5|max:100',
         ]);
 
         try {
@@ -180,8 +202,10 @@ class CitaController extends Controller
             ->with('success', 'El motivo de cancelación fue actualizado correctamente.');
     }
 
-    public function factura(int $id)
+    public function factura(Request $request, int $id)
     {
+        $clienteCuenta = $this->clienteDeLaCuenta($request);
+
         try {
             $cita = $this->citaService->obtenerParaFactura($id);
         } catch (\DomainException $e) {
@@ -190,6 +214,25 @@ class CitaController extends Controller
                 ->with('error', $e->getMessage());
         }
 
+        if ($clienteCuenta !== null && (int) $cita->cliente_id !== $clienteCuenta) {
+            abort(403);
+        }
+
         return view('citas.factura', compact('cita'));
+    }
+
+    private function clienteDeLaCuenta(Request $request): ?int
+    {
+        $usuario = $request->user();
+
+        if ($usuario->cliente_id !== null) {
+            return (int) $usuario->cliente_id;
+        }
+
+        if ($usuario->hasRole(config('seguridad.rol_cliente'))) {
+            abort(403, 'Tu cuenta no está vinculada a un cliente. Pide al administrador que la vincule.');
+        }
+
+        return null;
     }
 }

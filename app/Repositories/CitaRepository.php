@@ -21,10 +21,13 @@ class CitaRepository
     }
 
 
-    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null, bool $soloPagoPendiente = false)
+    public function obtenerTodas(?string $desde = null, ?string $hasta = null, ?int $servicioId = null, bool $soloPagoPendiente = false, ?int $clienteId = null)
     {
         return $this->model
             ->with(['cliente', 'detalleServicios.servicio'])
+            ->when($clienteId, function ($query) use ($clienteId) {
+                $query->where('cliente_id', $clienteId);
+            })
             ->when($desde, function ($query) use ($desde) {
                 $query->where('fecha_programada', '>=', Carbon::parse($desde)->startOfDay());
             })

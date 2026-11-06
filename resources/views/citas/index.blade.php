@@ -14,10 +14,14 @@
                 Citas
             </h2>
 
+            @can('crear citas')
             <a href="{{ route('citas.create') }}"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-3 rounded-xl shadow-sm transition">
+                
+                <span class="text-xl">+</span>
                 Nueva Cita
             </a>
+            @endcan
         </div>
 
         @if(session('success'))
@@ -212,42 +216,46 @@
             
                         <td class="border px-4 py-2">{{ $cita->motivoCancelacion }}</td>
                     
-                       <td class="border px-4 py-2">
+                        <td class="border px-4 py-2">
                             <div class="flex gap-2">
                                 @if($cita->estado === 'cancelada')
 
-                                   
-                                    <a href="{{ route('citas.motivo.form', $cita) }}"
-                                    title="Editar motivo de cancelación"
-                                    aria-label="Editar motivo de cancelación"
-                                    class="inline-flex items-center justify-center bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg p-2">
-                                        <span class="w-5 h-5" aria-hidden="true">
-                                            @include('layouts.partials.icons', ['icon' => 'pencil'])
-                                        </span>
-                                    </a>
+                                    @can('editar citas')
+                                        <a href="{{ route('citas.motivo.form', $cita) }}"
+                                        title="Editar motivo de cancelación"
+                                        aria-label="Editar motivo de cancelación"
+                                        class="inline-flex items-center justify-center bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg p-2">
+                                            <span class="w-5 h-5" aria-hidden="true">
+                                                @include('layouts.partials.icons', ['icon' => 'pencil'])
+                                            </span>
+                                        </a>
+                                    @endcan
 
                                 @else
 
-                
-                                    <a href="{{ route('citas.edit', $cita->id) }}"
-                                    title="Editar cita"
-                                    aria-label="Editar cita"
-                                    class="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white rounded-lg p-2">
-                                        <span class="w-5 h-5" aria-hidden="true">
-                                            @include('layouts.partials.icons', ['icon' => 'pencil'])
-                                        </span>
-                                    </a>
-
-                                    @if(in_array($cita->estado, ['pendiente', 'confirmada']) && ! $cita->fecha_programada->isToday())
-                                        <a href="{{ route('citas.cancelar.form', $cita) }}"
-                                        title="Cancelar cita"
-                                        aria-label="Cancelar cita"
-                                        class="inline-flex items-center justify-center bg-red-500 hover:bg-red-700 text-white rounded-lg p-2">
+                                    @can('editar citas')
+                                        <a href="{{ route('citas.edit', $cita->id) }}"
+                                        title="Editar cita"
+                                        aria-label="Editar cita"
+                                        class="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white rounded-lg p-2">
                                             <span class="w-5 h-5" aria-hidden="true">
-                                                @include('layouts.partials.icons', ['icon' => 'x-circle'])
+                                                @include('layouts.partials.icons', ['icon' => 'pencil'])
                                             </span>
                                         </a>
-                                    @endif
+                                    @endcan
+
+                                    @can('cancelar citas')
+                                        @if(in_array($cita->estado, ['pendiente', 'confirmada']) && ! $cita->fecha_programada->isToday())
+                                            <a href="{{ route('citas.cancelar.form', $cita) }}"
+                                            title="Cancelar cita"
+                                            aria-label="Cancelar cita"
+                                            class="inline-flex items-center justify-center bg-red-500 hover:bg-red-700 text-white rounded-lg p-2">
+                                                <span class="w-5 h-5" aria-hidden="true">
+                                                    @include('layouts.partials.icons', ['icon' => 'x-circle'])
+                                                </span>
+                                            </a>
+                                        @endif
+                                    @endcan
 
                                 @endif
 

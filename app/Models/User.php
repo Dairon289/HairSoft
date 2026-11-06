@@ -13,12 +13,12 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, TieneRolesActivos;
-   
 
     protected $fillable = [
         'name',
         'email',
         'password',
+        'cliente_id',
     ];
 
     protected $hidden = [
@@ -30,7 +30,6 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Cliente::class);
     }
-
 
     protected function casts(): array
     {
