@@ -247,6 +247,7 @@
                                     @can('cancelar citas')
                                         @if(in_array($cita->estado, ['pendiente', 'confirmada']) && ! $cita->fecha_programada->isToday())
                                             <a href="{{ route('citas.cancelar.form', $cita) }}"
+                                            onclick="return confirm('¿Seguro que deseas cancelar esta cita?')"
                                             title="Cancelar cita"
                                             aria-label="Cancelar cita"
                                             class="inline-flex items-center justify-center bg-red-500 hover:bg-red-700 text-white rounded-lg p-2">

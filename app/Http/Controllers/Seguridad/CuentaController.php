@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use App\Rules\ContrasenaSegura;
 
 class CuentaController extends Controller
 {
@@ -38,7 +39,7 @@ class CuentaController extends Controller
         $datos = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique(config('auth.providers.users.model'), 'email')],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', new ContrasenaSegura(), 'confirmed'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['string', Rule::exists(config('permission.table_names.roles'), 'name')],
         ]);
@@ -66,7 +67,7 @@ class CuentaController extends Controller
         $datos = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique(config('auth.providers.users.model'), 'email')->ignore($usuario->getKey())],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', new ContrasenaSegura(), 'confirmed'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['string', Rule::exists(config('permission.table_names.roles'), 'name')],
         ]);

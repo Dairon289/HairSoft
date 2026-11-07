@@ -38,7 +38,7 @@ class SeguridadSeeder extends Seeder
             ['name' => config('seguridad.rol_cliente'), 'guard_name' => $guard],
             ['activo' => true]
         );
-        $rolCliente->givePermissionTo(['ver citas', 'crear citas', 'ver servicios']);
+        $rolCliente->givePermissionTo(['ver citas', 'crear citas', 'cancelar citas', 'ver servicios']);
 
         $modelo = config('auth.providers.users.model');
         $datos = config('seguridad.admin');

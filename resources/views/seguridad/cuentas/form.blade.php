@@ -33,9 +33,8 @@
                    class="w-full rounded-md border border-slate-300 px-3 py-2">
             @if ($usuario)
                 <p class="mt-1 text-xs text-slate-400">Déjala vacía para conservar la actual.</p>
-            @else
-                <p class="mt-1 text-xs text-slate-400">Mínimo 8 caracteres.</p>
             @endif
+            @include('partials.criterios-contrasena', ['campo' => 'password'])
         </div>
 
         <div>

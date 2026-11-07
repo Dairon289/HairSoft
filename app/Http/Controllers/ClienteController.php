@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\ClienteService;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\Rule;
+use App\Rules\ContrasenaSegura;
 
 class ClienteController extends Controller
 {
@@ -44,7 +45,7 @@ class ClienteController extends Controller
             'telefono' => 'required|string|max:255',
             'rol'      => 'required|in:cliente,administrador',
             'estado'   => 'required|in:activo,inactivo',
-            'password' => 'required|string|min:8',
+            'password' => ['required', 'string', new ContrasenaSegura()],
         ]);
 
         $this->cliente_service->guardar($datos);
@@ -82,7 +83,7 @@ class ClienteController extends Controller
             'telefono' => 'required|string|max:255',
             'rol'      => 'required|in:cliente,administrador',
             'estado'   => 'required|in:activo,inactivo',
-            'password' => 'nullable|string|min:8',
+            'password' => ['nullable', 'string', new ContrasenaSegura()],
         ]);
 
         if (empty($datos['password'])) {

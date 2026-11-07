@@ -55,11 +55,12 @@
             </div>
             
             <div class="mb-5">
-                <label for="" class="block mb-2 font-semibold ">Contraseña</label>
-                <input type="password" name="password" class="w-full border rounded px-3 py-2 @error('password') border-red-500 @enderror">
+                <label for="password" class="block mb-2 font-semibold ">Contraseña</label>
+                <input type="password" name="password" id="password" class="w-full border rounded px-3 py-2 @error('password') border-red-500 @enderror">
                 @error('password')
                     <p class= "mt-1 text-sm text-red-600" >{{ $message }}</p>
                 @enderror
+                @include('partials.criterios-contrasena', ['campo' => 'password'])
             </div>
 
             <div class="mb-5">

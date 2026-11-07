@@ -111,15 +111,29 @@ class CitaController extends Controller
                 ->with('error', 'Una cita cancelada no se puede editar. Solo puedes modificar su motivo de cancelación.');
         }
 
+        $idsActuales = $citas->detalleServicios
+            ->pluck('servicio_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
         $clientes = $this->clienteService->listarTodo();
         $empleados = $this->empleadoService->listarTodo();
-        $servicios = $this->servicioService->listarTodo();
+        $servicios = $this->servicioService->listarTodo()
+            ->filter(fn ($servicio) => strtolower($servicio->estadoServicio) === 'activo'
+                || in_array((int) $servicio->id, $idsActuales, true))
+            ->values();
 
         return view('citas.edit', compact('citas', 'clientes', 'empleados', 'servicios'));
     }
 
     public function update(Request $request, int $id)
     {
+        $idsActuales = $this->citaService->obtenerPorId($id)
+            ->detalleServicios
+            ->pluck('servicio_id')
+            ->map(fn ($servicioId) => (int) $servicioId)
+            ->all();
+
         $datosValidados = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'empleado_id' => 'required|exists:empleados,id',
@@ -128,7 +142,16 @@ class CitaController extends Controller
             'fecha_inicio' => 'required_if:estado,iniciada,finalizada|nullable|date',
             'fecha_fin' => 'required_if:estado,finalizada|nullable|date|after:fecha_inicio',
             'servicios' => 'required|array',
-            'servicios.*' => 'exists:servicios,id',
+            'servicios.*' => [
+                Rule::exists('servicios', 'id')->where(function ($query) use ($idsActuales) {
+                    $query->where(function ($grupo) use ($idsActuales) {
+                        $grupo->where('estadoServicio', 'activo')
+                              ->orWhereIn('id', $idsActuales);
+                    });
+                }),
+            ],
+        ], [
+            'servicios.*.exists' => 'Uno de los servicios seleccionados ya no está disponible. Quítalo e intenta de nuevo.',
         ]);
 
         try {
@@ -144,6 +167,8 @@ class CitaController extends Controller
 
     public function cancelar(Request $request, Cita $cita): RedirectResponse
     {
+        $this->verificarCitaDeLaCuenta($request, $cita);
+
         $datos = $request->validate([
             'motivoCancelacion' => 'required|string|min:5|max:100',
         ]);
@@ -161,8 +186,10 @@ class CitaController extends Controller
             ->with('success', 'La cita fue cancelada correctamente.');
     }
 
-    public function formularioCancelar(Cita $cita)
+    public function formularioCancelar(Request $request, Cita $cita)
     {
+        $this->verificarCitaDeLaCuenta($request, $cita);
+
         if (!$this->citaService->puedeCancelarse($cita)) {
             return redirect()
                 ->route('citas.index')
@@ -234,5 +261,14 @@ class CitaController extends Controller
         }
 
         return null;
+    }
+
+    private function verificarCitaDeLaCuenta(Request $request, Cita $cita): void
+    {
+        $clienteCuenta = $this->clienteDeLaCuenta($request);
+
+        if ($clienteCuenta !== null && (int) $cita->cliente_id !== $clienteCuenta) {
+            abort(403);
+        }
     }
 }
