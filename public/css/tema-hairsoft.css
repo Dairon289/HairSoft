@@ -1,0 +1,343 @@
+/* Tema HairSoft: paleta de barbería (carbón, grafito, hueso y latón).
+   Todo el sistema usa estos colores. Para cambiar la paleta, edita solo las variables. */
+:root {
+    --hs-carbon: #14171A;
+    --hs-grafito: #1F2328;
+    --hs-panel: #262B31;
+    --hs-linea: #363C44;
+    --hs-hueso: #ECE7DE;
+    --hs-hueso-tenue: #D6D1C8;
+    --hs-humo: #9BA1A8;
+    --hs-laton: #ECE7DE;
+    --hs-laton-claro: #72a9c5;
+    --hs-error: #E5675F;
+    --hs-fondo: #101316;
+
+    --hs-ok-fondo: rgba(74, 160, 110, 0.16);
+    --hs-ok-texto: #9BE0BA;
+    --hs-ok-borde: rgba(74, 160, 110, 0.5);
+    --hs-err-fondo: rgba(229, 103, 95, 0.14);
+    --hs-err-texto: #F4B6B1;
+    --hs-err-borde: rgba(229, 103, 95, 0.5);
+}
+
+/* ---------- Fondo general y área de contenido ---------- */
+html.hs-fondo { background: var(--hs-fondo); color-scheme: dark; }
+
+.hs-fondo,
+.hs-contenido { background: var(--hs-fondo); }
+
+.hs-contenido { color: var(--hs-hueso); }
+
+.hs-texto { color: var(--hs-hueso); }
+.hs-humo { color: var(--hs-humo); }
+
+/* ---------- Barra lateral ---------- */
+.hs-sidebar {
+    background: var(--hs-carbon);
+    color: var(--hs-humo);
+    border-right: 1px solid var(--hs-linea);
+}
+
+.hs-borde { border-color: var(--hs-linea); }
+
+.hs-logo {
+    background: var(--hs-laton);
+    color: var(--hs-carbon);
+}
+
+.hs-marca {
+    font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--hs-hueso);
+}
+
+.hs-grupo { color: var(--hs-humo); }
+
+.hs-enlace { color: var(--hs-humo); }
+
+.hs-enlace:hover {
+    background: var(--hs-grafito);
+    color: var(--hs-hueso);
+}
+
+.hs-enlace:focus-visible {
+    outline: 2px solid var(--hs-laton);
+    outline-offset: 2px;
+}
+
+.hs-enlace--activo,
+.hs-enlace--activo:hover {
+    background: var(--hs-laton);
+    color: var(--hs-carbon);
+}
+
+.hs-enlace--salir:hover {
+    background: rgba(229, 103, 95, 0.12);
+    color: #F4C2BE;
+}
+
+/* ---------- Encabezado ---------- */
+.hs-header {
+    background: var(--hs-carbon);
+    border-bottom: 1px solid var(--hs-linea);
+}
+
+.hs-titulo {
+    font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--hs-hueso);
+}
+
+.hs-icono-btn { color: var(--hs-humo); }
+
+.hs-icono-btn:hover {
+    background: var(--hs-grafito);
+    color: var(--hs-laton);
+}
+
+.hs-icono-btn:focus-visible {
+    outline: 2px solid var(--hs-laton);
+    outline-offset: 2px;
+}
+
+.hs-avatar { box-shadow: 0 0 0 2px var(--hs-linea); }
+
+.hs-menu {
+    background: var(--hs-grafito);
+    border: 1px solid var(--hs-linea);
+}
+
+.hs-menu-borde { border-color: var(--hs-linea); }
+
+.hs-menu-lista > li + li { border-top: 1px solid var(--hs-linea); }
+
+.hs-menu-item { color: var(--hs-hueso); }
+
+.hs-menu-item:hover { background: rgba(201, 162, 77, 0.12); }
+
+.hs-menu-item--salir { color: #F4C2BE; }
+
+.hs-menu-item--salir:hover { background: rgba(229, 103, 95, 0.12); }
+
+/* ==========================================================
+   Capa de compatibilidad (.hs-app)
+   Convierte al tema oscuro las pantallas que todavía usan
+   clases claras de Tailwind (servicios, clientes, empleados,
+   pagos, citas, pie de página...). Así todo queda en una sola
+   tonalidad sin editar cada vista.
+   ========================================================== */
+
+/* Bordes por defecto */
+.hs-app * { border-color: var(--hs-linea); }
+
+/* Fondos neutros */
+.hs-app .bg-white { background-color: var(--hs-grafito); }
+
+.hs-app .bg-gray-50,
+.hs-app .bg-slate-50,
+.hs-app .bg-gray-100,
+.hs-app .bg-slate-100,
+.hs-app .bg-gray-200,
+.hs-app .bg-slate-200 { background-color: var(--hs-panel); }
+
+.hs-app .hover\:bg-gray-50:hover,
+.hs-app .hover\:bg-slate-50:hover,
+.hs-app .hover\:bg-gray-100:hover,
+.hs-app .hover\:bg-slate-100:hover { background-color: rgba(201, 162, 77, 0.10); }
+
+/* Texto neutro */
+.hs-app .text-black,
+.hs-app .text-gray-900,
+.hs-app .text-gray-800,
+.hs-app .text-slate-900,
+.hs-app .text-slate-800,
+.hs-app .text-slate-700 { color: var(--hs-hueso); }
+
+.hs-app .text-gray-700,
+.hs-app .text-gray-600,
+.hs-app .text-slate-600 { color: var(--hs-hueso-tenue); }
+
+.hs-app .text-gray-500,
+.hs-app .text-gray-400,
+.hs-app .text-gray-300,
+.hs-app .text-slate-500,
+.hs-app .text-slate-400,
+.hs-app .text-slate-300 { color: var(--hs-humo); }
+
+/* Bordes neutros */
+.hs-app .border-gray-100,
+.hs-app .border-gray-200,
+.hs-app .border-gray-300,
+.hs-app .border-gray-400,
+.hs-app .border-slate-100,
+.hs-app .border-slate-200,
+.hs-app .border-slate-300,
+.hs-app .border-slate-400 { border-color: var(--hs-linea); }
+
+/* Acento (azul / índigo pasan a latón) */
+.hs-app .bg-blue-50,
+.hs-app .bg-blue-100,
+.hs-app .bg-indigo-50,
+.hs-app .bg-indigo-100 { background-color: rgba(201, 162, 77, 0.14); }
+
+.hs-app .hover\:bg-blue-100:hover,
+.hs-app .hover\:bg-indigo-100:hover { background-color: rgba(201, 162, 77, 0.24); }
+
+.hs-app .border-blue-200,
+.hs-app .border-blue-300,
+.hs-app .border-indigo-200,
+.hs-app .border-indigo-300 { border-color: rgba(201, 162, 77, 0.4); }
+
+.hs-app .text-blue-400,
+.hs-app .text-blue-500,
+.hs-app .text-blue-600,
+.hs-app .text-blue-700,
+.hs-app .text-blue-800,
+.hs-app .text-blue-900,
+.hs-app .text-indigo-500,
+.hs-app .text-indigo-600,
+.hs-app .text-indigo-700 { color: var(--hs-laton); }
+
+/* Botones principales: latón con texto oscuro */
+.hs-app a.bg-blue-600,
+.hs-app button.bg-blue-600,
+.hs-app a.bg-blue-500,
+.hs-app button.bg-blue-500,
+.hs-app a.bg-indigo-600,
+.hs-app button.bg-indigo-600,
+.hs-app a.bg-green-500,
+.hs-app button.bg-green-500,
+.hs-app a.bg-green-600,
+.hs-app button.bg-green-600,
+.hs-app a.bg-yellow-500,
+.hs-app button.bg-yellow-500,
+.hs-app a.bg-yellow-600,
+.hs-app button.bg-yellow-600 {
+    background-color: var(--hs-laton);
+    color: var(--hs-carbon);
+}
+
+.hs-app a.hover\:bg-blue-700:hover,
+.hs-app button.hover\:bg-blue-700:hover,
+.hs-app a.hover\:bg-indigo-700:hover,
+.hs-app button.hover\:bg-indigo-700:hover,
+.hs-app a.hover\:bg-green-600:hover,
+.hs-app button.hover\:bg-green-600:hover,
+.hs-app a.hover\:bg-green-700:hover,
+.hs-app button.hover\:bg-green-700:hover,
+.hs-app a.hover\:bg-yellow-700:hover,
+.hs-app button.hover\:bg-yellow-700:hover {
+    background-color: var(--hs-laton-claro);
+}
+
+/* Éxito (verde) */
+.hs-app .bg-green-50,
+.hs-app .bg-green-100,
+.hs-app .bg-emerald-50,
+.hs-app .bg-emerald-100 { background-color: var(--hs-ok-fondo); }
+
+.hs-app .border-green-200,
+.hs-app .border-green-300,
+.hs-app .border-green-400,
+.hs-app .border-emerald-200,
+.hs-app .border-emerald-400 { border-color: var(--hs-ok-borde); }
+
+.hs-app .text-green-600,
+.hs-app .text-green-700,
+.hs-app .text-green-800,
+.hs-app .text-emerald-600,
+.hs-app .text-emerald-700 { color: var(--hs-ok-texto); }
+
+.hs-app a.bg-emerald-500,
+.hs-app button.bg-emerald-500,
+.hs-app a.bg-emerald-600,
+.hs-app button.bg-emerald-600 {
+    background-color: #3E8E63;
+    color: #FFFFFF;
+}
+
+.hs-app a.hover\:bg-emerald-700:hover,
+.hs-app button.hover\:bg-emerald-700:hover { background-color: #4AA377; }
+
+/* Peligro (rojo) */
+.hs-app .bg-red-50,
+.hs-app .bg-red-100 { background-color: var(--hs-err-fondo); }
+
+.hs-app .hover\:bg-red-50:hover,
+.hs-app .hover\:bg-red-100:hover { background-color: rgba(229, 103, 95, 0.24); }
+
+.hs-app .border-red-200,
+.hs-app .border-red-300,
+.hs-app .border-red-400 { border-color: var(--hs-err-borde); }
+
+.hs-app .text-red-500,
+.hs-app .text-red-600,
+.hs-app .text-red-700,
+.hs-app .text-red-800 { color: var(--hs-err-texto); }
+
+.hs-app a.bg-red-500,
+.hs-app button.bg-red-500,
+.hs-app a.bg-red-600,
+.hs-app button.bg-red-600 {
+    background-color: #B9473F;
+    color: #FFFFFF;
+}
+
+.hs-app a.hover\:bg-red-700:hover,
+.hs-app button.hover\:bg-red-700:hover { background-color: #CF5A52; }
+
+/* Campos de formulario */
+.hs-app input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="file"]),
+.hs-app select,
+.hs-app textarea {
+    background-color: var(--hs-carbon);
+    color: var(--hs-hueso);
+    color-scheme: dark;
+}
+
+.hs-app ::placeholder { color: var(--hs-humo); opacity: 1; }
+
+.hs-app input[type="checkbox"],
+.hs-app input[type="radio"] { accent-color: var(--hs-laton); }
+
+.hs-app input:focus,
+.hs-app select:focus,
+.hs-app textarea:focus {
+    outline: none;
+    border-color: var(--hs-laton);
+    box-shadow: 0 0 0 3px rgba(201, 162, 77, 0.25);
+}
+
+/* Tablas */
+.hs-app table {
+    border-collapse: collapse;
+    background-color: var(--hs-grafito);
+}
+
+.hs-app thead th {
+    color: var(--hs-hueso);
+    font-weight: 600;
+}
+
+.hs-app tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.025); }
+.hs-app tbody tr:hover { background-color: rgba(201, 162, 77, 0.07); }
+
+/* Impresión (facturas): fondo blanco y texto negro */
+@media print {
+    .hs-sidebar,
+    .hs-header { display: none !important; }
+
+    .hs-app { padding-left: 0 !important; }
+
+    html.hs-fondo,
+    .hs-contenido,
+    .hs-app,
+    .hs-app * {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        border-color: #CCCCCC !important;
+    }
+}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-50">
+<html lang="es" class="h-full hs-fondo">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,6 +27,10 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+
+    {{-- Tema de colores de HairSoft (paleta compartida) --}}
+    <link rel="stylesheet" href="{{ asset('css/tema-hairsoft.css') }}">
 
     {{-- Chart.js (solo se usa donde se necesita) --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
@@ -53,10 +57,10 @@
 
         @include('layouts.partials.sidebar')
 
-        <div class="flex-1 flex flex-col min-w-0 lg:pl-64">
+        <div class="flex-1 flex flex-col min-w-0 lg:pl-64 hs-app">
             @include('layouts.partials.navbar')
 
-            <main class="flex-1 bg-slate-50 p-4 sm:p-6 lg:p-8">
+            <main class="flex-1 hs-contenido p-4 sm:p-6 lg:p-8">
                 
                 @if (session('error'))
                     <x-alert type="error" class="mb-6">{{ session('error') }}</x-alert>

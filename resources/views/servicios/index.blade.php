@@ -131,11 +131,11 @@
 
                         <div class="bg-blue-50 rounded-xl p-3">
 
-                            <p class="text-xs text-blue-500 mb-1">
+                            <p class="text-xs text-white-500 mb-1">
                                 Precio
                             </p>
 
-                            <p class="text-lg font-bold text-blue-700">
+                            <p class="text-lg font-bold text-white-700">
                                 ${{ number_format((float) $servicio->precioServicio, 0, ',', '.') }}
                             </p>
 
@@ -143,7 +143,6 @@
 
                     </div>
 
-                    {{-- Acciones (solo con permiso) --}}
                     @canany(['editar servicios', 'eliminar servicios'])
                     <div class="flex items-center justify-end gap-2 border-t border-gray-100 pt-4">
 
@@ -151,7 +150,7 @@
                         <a href="{{ route('servicio.edit', $servicio->id) }}"
                             title="Editar servicio"
                             aria-label="Editar servicio"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition text-sm font-medium">
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-white-700 hover:bg-blue-100 transition text-sm font-medium">
 
                             <span class="w-4 h-4">
                                 @include('layouts.partials.icons', ['icon' => 'pencil'])

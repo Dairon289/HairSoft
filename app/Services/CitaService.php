@@ -25,10 +25,11 @@ class CitaService
 
         unset($datos['servicios']);
 
-        
         $serviciosSeleccionados = servicio::whereIn('id', $servicios)->get();
 
         $fechaProgramada = Carbon::parse($datos['fecha_programada']);
+
+        $this->validarNoEsPasada($fechaProgramada, $datos['estado'] ?? 'pendiente');
 
         $duracionTotal = 0;
 
@@ -42,7 +43,6 @@ class CitaService
         $fechaFinProgramada = $fechaProgramada->copy()->addMinutes($duracionTotal);
         $this->validarFueraDeMantenimiento($fechaProgramada, $fechaFinProgramada);
         $this->validarEmpleadoOfreceServicios($datos['empleado_id'], $servicios);
-        $this->validarFueraDeMantenimiento($fechaProgramada, $fechaFinProgramada);
 
         $this->validarCruceHorario(
             $datos['empleado_id'],
@@ -84,6 +84,7 @@ class CitaService
             ->addMinutes($this->calcularDuracionMinutos($serviciosEditados));
 
         if (! $fechaProgramada->equalTo($cita->fecha_programada)) {
+            $this->validarNoEsPasada($fechaProgramada, $datosValidos['estado']);
             $this->validarFueraDeMantenimiento($fechaProgramada, $fechaFinProgramada);
         }
 
@@ -191,6 +192,19 @@ class CitaService
             'motivoCancelacion' => $motivoCancelacion,
         ]);
     }  
+
+    private function validarNoEsPasada(Carbon $fechaProgramada, string $estado): void
+    {
+        if (! in_array($estado, ['pendiente', 'confirmada'], true)) {
+            return;
+        }
+
+        if ($fechaProgramada->lt(now())) {
+            throw ValidationException::withMessages([
+                'fecha_programada' => 'No puedes programar una cita en una fecha u hora que ya pasó. Elige un horario posterior a la hora actual.',
+            ]);
+        }
+    }
 
 
     private function validarCruceHorario($empleadoId, $inicio, $fin, $citaIdExcluir = null)

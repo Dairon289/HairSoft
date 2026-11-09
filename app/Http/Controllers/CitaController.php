@@ -66,8 +66,7 @@ class CitaController extends Controller
     }
 
     public function store(Request $request)
-    {   
-        
+    {
         $clienteCuenta = $this->clienteDeLaCuenta($request);
 
         if ($clienteCuenta !== null) {
@@ -81,7 +80,10 @@ class CitaController extends Controller
 
         $datosValidados = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
-            'empleado_id' => 'required|exists:empleados,id',
+            'empleado_id' => [
+                'required',
+                Rule::exists('empleados', 'id')->where('disponibilidad', 'disponible'),
+            ],
             'fecha_programada' => 'required|date',
             'estado' => 'required|in:pendiente,confirmada,iniciada,finalizada',
             'fecha_inicio' => 'nullable|date|required_if:estado,iniciada,finalizada',
@@ -91,6 +93,7 @@ class CitaController extends Controller
                 Rule::exists('servicios', 'id')->where('estadoServicio', 'activo'),
             ],
         ], [
+            'empleado_id.exists' => 'El empleado seleccionado no está disponible. Elige otro empleado.',
             'servicios.*.exists' => 'Uno de los servicios seleccionados ya no está disponible. Elige otro e intenta de nuevo.',
         ]);
 

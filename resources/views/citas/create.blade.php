@@ -14,125 +14,135 @@
     ])->values();
 @endphp
 
-<x-card>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&display=swap">
+<link rel="stylesheet" href="{{ asset('css/formulario-oscuro.css') }}">
 
-    <div class="container mx-auto mt-10">
+<div class="cita-wrap">
+    <div class="cita-panel">
 
-        <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-8">
+        <header class="cita-cabecera">
+            <h2 class="cita-titulo">Nueva cita</h2>
+            <p class="cita-subtitulo">Elige el empleado, el horario y los servicios.</p>
+        </header>
 
-            <h2 class="text-3xl font-bold text-center mb-6">
-                Nueva cita
-            </h2>
+        @if($errors->any())
+            <div class="cita-errores" role="alert">
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-            @if($errors->any())
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-5">
-                    <ul>
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+        <form action="{{ route('citas.store') }}" method="POST">
+            @csrf
 
-            <form action="{{ route('citas.store') }}" method="POST">
-                @csrf
+            <div class="cita-grupo">
+                <div class="cita-fila">
 
-                @unless($esCliente)
-                    <div class="mb-5">
-                        <label for="cliente_id" class="block mb-2 font-semibold">Cliente</label>
-                        <select id="cliente_id" name="cliente_id" required
-                                class="w-full border rounded px-3 py-2 @error('cliente_id') border-red-500 @enderror">
-                            @foreach($clientes as $cliente)
-                                <option value="{{ $cliente->id }}" @selected(old('cliente_id') == $cliente->id)>
-                                    {{ $cliente->nombre }} {{ $cliente->apellido }}
+                    @unless($esCliente)
+                        <div class="cita-campo">
+                            <label for="cliente_id" class="cita-label">Cliente</label>
+                            <select id="cliente_id" name="cliente_id" required
+                                    class="cita-input @error('cliente_id') is-invalid @enderror">
+                                @foreach($clientes as $cliente)
+                                    <option value="{{ $cliente->id }}" @selected(old('cliente_id') == $cliente->id)>
+                                        {{ $cliente->nombre }} {{ $cliente->apellido }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endunless
+
+                    <div class="cita-campo">
+                        <label for="empleado_id" class="cita-label">Empleado</label>
+                        <select id="empleado_id" name="empleado_id" required
+                                class="cita-input @error('empleado_id') is-invalid @enderror">
+                            @foreach($empleados as $empleado)
+                                @php $empleadoDisponible = strtolower($empleado->disponibilidad) === 'disponible'; @endphp
+                                <option value="{{ $empleado->id }}"
+                                        @selected(old('empleado_id') == $empleado->id)
+                                        @disabled(! $empleadoDisponible)>
+                                    {{ $empleado->nombreEmpleado }} {{ $empleado->apellidoEmpleado }}
+                                    ({{ $empleadoDisponible ? 'disponible' : 'no disponible' }})
                                 </option>
                             @endforeach
                         </select>
                     </div>
-                @endunless
 
-                <div class="mb-5">
-                    <label for="empleado_id" class="block mb-2 font-semibold">Empleado</label>
-                    <select id="empleado_id" name="empleado_id" required
-                            class="w-full border rounded px-3 py-2 @error('empleado_id') border-red-500 @enderror">
-                        @foreach($empleados as $empleado)
-                            <option value="{{ $empleado->id }}" @selected(old('empleado_id') == $empleado->id)>
-                                {{ $empleado->nombreEmpleado }} {{ $empleado->apellidoEmpleado }}
-                            </option>
-                        @endforeach
-                    </select>
                 </div>
+            </div>
 
-                <div class="mb-5">
-                    <label for="fecha_programada" class="block mb-2 font-semibold">Fecha programada</label>
-                    <input type="text" id="fecha_programada" name="fecha_programada"
-                           value="{{ old('fecha_programada') }}" required
-                           class="selector-fecha-hora w-full border rounded px-3 py-2 @error('fecha_programada') border-red-500 @enderror">
+            <div class="cita-grupo">
+                <div class="cita-fila">
+
+                    <div class="cita-campo">
+                        <label for="fecha_programada" class="cita-label">Fecha programada</label>
+                        <input type="text" id="fecha_programada" name="fecha_programada"
+                               value="{{ old('fecha_programada') }}" required
+                               class="selector-fecha-hora cita-input @error('fecha_programada') is-invalid @enderror">
+                    </div>
+
+                    <div class="cita-campo">
+                        <label for="estado" class="cita-label">Estado de la cita</label>
+                        <select id="estado" name="estado" required
+                                class="cita-input @error('estado') is-invalid @enderror">
+                            <option value="pendiente" @selected(old('estado', 'pendiente') === 'pendiente')>Pendiente</option>
+                            <option value="confirmada" @selected(old('estado') === 'confirmada')>Confirmada</option>
+                        </select>
+                    </div>
+
                 </div>
+            </div>
 
-                <div class="mb-5">
-                    <label for="estado" class="block mb-2 font-semibold">Estado de la cita</label>
-                    <select id="estado" name="estado" required
-                            class="w-full border rounded px-3 py-2 @error('estado') border-red-500 @enderror">
-                        <option value="pendiente" @selected(old('estado', 'pendiente') === 'pendiente')>Pendiente</option>
-                        <option value="confirmada" @selected(old('estado') === 'confirmada')>Confirmada</option>
-                    </select>
-                </div>
+            <div class="cita-grupo">
+                <div class="cita-campo" x-data="selectorServicios(@js($catalogoServicios), @js(old('servicios', [])))">
+                    <span class="cita-label">Servicios</span>
 
-                <div class="mb-5" x-data="selectorServicios(@js($catalogoServicios), @js(old('servicios', [])))">
-                    <label class="block mb-2 font-semibold">Servicios</label>
-
-                    <div class="relative">
-                        <button type="button" @click="abierto = !abierto"
-                                class="w-full border rounded px-3 py-2 text-left flex justify-between items-center bg-white @error('servicios') border-red-500 @enderror">
+                    <div class="cita-selector">
+                        <button type="button" @click="abierto = !abierto" :aria-expanded="abierto"
+                                class="cita-input cita-selector-btn @error('servicios') is-invalid @enderror">
                             <span x-text="elegidos.length ? elegidos.length + ' servicio(s) seleccionado(s)' : 'Seleccionar servicios'"></span>
                             <span aria-hidden="true">▾</span>
                         </button>
 
-                        <div x-show="abierto" @click.outside="abierto = false" style="display: none;"
-                             class="absolute z-10 mt-1 w-full bg-white border rounded shadow max-h-60 overflow-y-auto">
+                        <div x-show="abierto" @click.outside="abierto = false" style="display: none;" class="cita-opciones">
                             @foreach($servicios as $servicio)
-                                <label class="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer">
+                                <label class="cita-opcion">
                                     <input type="checkbox" name="servicios[]" value="{{ $servicio->id }}"
-                                           x-model="seleccionados" class="mr-2">
+                                           x-model="seleccionados">
                                     {{ $servicio->nombreServicio }} - ${{ number_format($servicio->precioServicio, 0, ',', '.') }}
                                 </label>
                             @endforeach
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-2 mt-2">
+                    <div class="cita-chips">
                         <template x-for="s in elegidos" :key="s.id">
-                            <span class="inline-flex items-center bg-blue-100 text-blue-800 rounded px-2 py-1 text-sm">
+                            <span class="cita-chip">
                                 <span x-text="s.nombre + ' - ' + formato(s.precio)"></span>
-                                <button type="button" @click="quitar(s.id)" class="ml-2 font-bold" aria-label="Quitar servicio">×</button>
+                                <button type="button" @click="quitar(s.id)" aria-label="Quitar servicio">×</button>
                             </span>
                         </template>
                     </div>
 
-                    <p class="mt-3 font-semibold">
-                        Total a pagar: <span x-text="formato(total)"></span>
-                    </p>
+                    <div class="cita-total">
+                        <span class="cita-total-label">Total a pagar</span>
+                        <span class="cita-total-monto" x-text="formato(total)"></span>
+                    </div>
                 </div>
+            </div>
 
-                <div class="flex justify-between items-center">
-                    <a href="{{ route('citas.index') }}"
-                       class="bg-blue-600 hover:bg-blue-700 text-white rounded px-5 py-2">
-                        Volver
-                    </a>
+            <div class="cita-acciones">
+                <a href="{{ route('citas.index') }}" class="cita-btn cita-btn-sec">Volver</a>
+                <button type="submit" class="cita-btn cita-btn-pri">Guardar cita</button>
+            </div>
 
-                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white rounded px-5 py-2">
-                        Guardar Cita
-                    </button>
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
-
-</x-card>
+</div>
 
 <script>
     function selectorServicios(servicios, seleccionados) {
@@ -157,6 +167,7 @@
 </script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/es.js"></script>
 <script>

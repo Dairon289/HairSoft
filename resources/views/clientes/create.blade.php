@@ -72,17 +72,6 @@
             </div>
 
             <div class="mb-5">
-                <label class="block mb-2 font-semibold">Rol</label>
-                <select name="rol" class="w-full border rounded px-3 py-2 @error('rol') border-red-500 @enderror">
-                    <option value="cliente" @selected(old('rol') === 'cliente')>Cliente</option>
-                    <option value="administrador" @selected(old('rol') === 'administrador')>Administrador</option>
-                </select>
-                @error('rol')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="mb-5">
                 <label for="estado" class="block mb-2 font-semibold">Estado Cliente</label>
                 <select id="estado" name="estado" class="w-full border rounded px-3 py-2 @error('estado') border-red-500 @enderror">
                     <option value="activo" @selected(old('estado') === 'activo')>Activo</option>
