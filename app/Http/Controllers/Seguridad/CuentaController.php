@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Seguridad;
 
 use App\Http\Controllers\Controller;
+use App\Models\Empleado;
+use App\Rules\ContrasenaSegura;
 use App\Services\Seguridad\CuentaService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
@@ -10,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
-use App\Rules\ContrasenaSegura;
 
 class CuentaController extends Controller
 {
@@ -31,6 +32,7 @@ class CuentaController extends Controller
             'usuario' => null,
             'roles' => $this->cuentaService->listarRoles(),
             'seleccionados' => old('roles', []),
+            'empleados' => Empleado::orderBy('nombreEmpleado')->get(),
         ]);
     }
 
@@ -42,9 +44,20 @@ class CuentaController extends Controller
             'password' => ['required', 'string', new ContrasenaSegura(), 'confirmed'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['string', Rule::exists(config('permission.table_names.roles'), 'name')],
-        ]);
+            'empleado_id' => [
+                Rule::requiredIf(fn () => $this->esRolEmpleado($request)),
+                'nullable',
+                'exists:empleados,id',
+                Rule::unique(config('auth.providers.users.model'), 'empleado_id'),
+            ],
+        ], $this->mensajesEmpleado());
 
-        $this->cuentaService->crear(Arr::only($datos, ['name', 'email', 'password']), $datos['roles'] ?? []);
+        $datos['empleado_id'] = $this->esRolEmpleado($request) ? $datos['empleado_id'] : null;
+
+        $this->cuentaService->crear(
+            Arr::only($datos, ['name', 'email', 'password', 'empleado_id']),
+            $datos['roles'] ?? []
+        );
 
         return redirect()->route('seguridad.cuentas.index')->with('success', 'Usuario creado correctamente.');
     }
@@ -57,6 +70,7 @@ class CuentaController extends Controller
             'usuario' => $usuario,
             'roles' => $this->cuentaService->listarRoles(),
             'seleccionados' => old('roles', $usuario->rolesConInactivos->pluck('name')->all()),
+            'empleados' => Empleado::orderBy('nombreEmpleado')->get(),
         ]);
     }
 
@@ -70,12 +84,20 @@ class CuentaController extends Controller
             'password' => ['nullable', 'string', new ContrasenaSegura(), 'confirmed'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['string', Rule::exists(config('permission.table_names.roles'), 'name')],
-        ]);
+            'empleado_id' => [
+                Rule::requiredIf(fn () => $this->esRolEmpleado($request)),
+                'nullable',
+                'exists:empleados,id',
+                Rule::unique(config('auth.providers.users.model'), 'empleado_id')->ignore($usuario->getKey()),
+            ],
+        ], $this->mensajesEmpleado());
+
+        $datos['empleado_id'] = $this->esRolEmpleado($request) ? $datos['empleado_id'] : null;
 
         try {
             $this->cuentaService->actualizar(
                 $usuario,
-                Arr::only($datos, ['name', 'email', 'password']),
+                Arr::only($datos, ['name', 'email', 'password', 'empleado_id']),
                 $datos['roles'] ?? [],
                 $request->user()
             );
@@ -95,5 +117,18 @@ class CuentaController extends Controller
         }
 
         return redirect()->route('seguridad.cuentas.index')->with('success', 'Usuario eliminado correctamente.');
+    }
+
+    private function esRolEmpleado(Request $request): bool
+    {
+        return in_array(config('seguridad.rol_empleado'), $request->input('roles', []), true);
+    }
+
+    private function mensajesEmpleado(): array
+    {
+        return [
+            'empleado_id.required' => 'Selecciona el empleado al que pertenece esta cuenta.',
+            'empleado_id.unique' => 'Ese empleado ya tiene una cuenta vinculada.',
+        ];
     }
 }

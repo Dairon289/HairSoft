@@ -64,6 +64,23 @@
         </div>
     </div>
 
+    <div>
+        <label for="empleado_id" class="block text-sm font-medium text-slate-700 mb-1">Empleado vinculado</label>
+        <select name="empleado_id" id="empleado_id"
+                class="w-full sm:max-w-md rounded-md border border-slate-300 px-3 py-2">
+            <option value="">Sin vincular</option>
+            @foreach ($empleados as $empleado)
+                <option value="{{ $empleado->id }}"
+                    @selected((string) old('empleado_id', $usuario?->empleado_id) === (string) $empleado->id)>
+                    {{ $empleado->nombreEmpleado }} {{ $empleado->apellidoEmpleado }}
+                </option>
+            @endforeach
+        </select>
+        <p class="mt-1 text-xs text-slate-400">
+            Obligatorio si marcas el rol "empleado". Con este vínculo la cuenta ve solo su propia agenda.
+        </p>
+    </div>
+
     <div class="flex justify-end gap-3 border-t border-slate-100 pt-4">
         <a href="{{ route('seguridad.cuentas.index') }}" class="rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-600">Cancelar</a>
         <button type="submit" class="rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2">Guardar</button>

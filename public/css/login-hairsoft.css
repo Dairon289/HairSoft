@@ -1,0 +1,300 @@
+/* ==========================================================================
+   HairSoft - Login Split-Screen
+   Paleta uniforme Dark Luxury vinculada a Welcome y Agenda
+   ========================================================================== */
+
+:root {
+    --hs-grafito:     #14171E;
+    --hs-panel:       #1E222A;
+    --hs-linea:       #363C44;
+    --hs-cafe:        #8B654A;
+    --hs-cafe-hover:  #72523B;
+    --hs-laton:       #D8C3A5;
+    --hs-hueso:       #F8F4ED;
+    --hs-humo:        #9CA3AF;
+    --hs-error:       #EF4444;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body.login-body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--hs-grafito);
+    color: var(--hs-hueso);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.login-split-contenedor {
+    display: flex;
+    min-height: 100vh;
+    width: 90%;
+}
+
+/* --------------------------------------------------------------------------
+   COLUMNA IZQUIERDA: Banner y Beneficios
+   -------------------------------------------------------------------------- */
+.login-lateral-banner {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3.5rem 3rem;
+    background-color: #12141A;
+    background-image: 
+        linear-gradient(135deg, rgba(18, 20, 26, 0.94) 0%, rgba(20, 23, 30, 0.78) 50%, rgba(18, 20, 26, 0.95) 100%),
+        url('../img/login-barberia.jpg');
+    background-size: cover;
+    background-position: center;
+    border-right: 1px solid var(--hs-linea);
+}
+
+.login-marca-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.login-marca-logo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+}
+
+.login-marca-nombre {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--hs-hueso);
+}
+
+.login-banner-contenido {
+    max-width: 480px;
+    margin: 2rem 0;
+}
+
+.login-banner-titulo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    line-height: 1.2;
+    color: var(--hs-hueso);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.login-banner-titulo span {
+    color: var(--hs-laton);
+}
+
+.login-banner-desc {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--hs-humo);
+    margin-bottom: 2rem;
+}
+
+.login-beneficios-lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-beneficio-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    color: var(--hs-hueso);
+}
+
+.login-beneficio-icono {
+    width: 22px;
+    height: 22px;
+    color: var(--hs-laton);
+    flex-shrink: 0;
+}
+
+.login-banner-pie {
+    font-size: 0.78rem;
+    color: var(--hs-humo);
+}
+
+/* --------------------------------------------------------------------------
+   COLUMNA DERECHA: Formulario
+   -------------------------------------------------------------------------- */
+.login-lateral-form {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    background-color: var(--hs-grafito);
+}
+
+.login-caja-interna {
+    width: 100%;
+    max-width: 380px;
+}
+
+.login-form-cabecera {
+    margin-bottom: 1.75rem;
+}
+
+.login-form-titulo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--hs-hueso);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.35rem;
+}
+
+.login-form-subtitulo {
+    font-size: 0.82rem;
+    color: var(--hs-humo);
+}
+
+.login-campo {
+    margin-bottom: 1.05rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--hs-laton);
+    margin-bottom: 0.35rem;
+}
+
+.login-input-grupo {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.login-input {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.88rem;
+    border-radius: 6px;
+    background-color: var(--hs-panel);
+    border: 1px solid var(--hs-linea);
+    color: var(--hs-hueso);
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.login-input:focus {
+    border-color: var(--hs-laton);
+    box-shadow: 0 0 0 2px rgba(216, 195, 165, 0.15);
+}
+
+.login-input.is-invalid {
+    border-color: var(--hs-error);
+}
+
+.login-btn-ojo {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--hs-humo);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.login-btn-ojo:hover {
+    color: var(--hs-hueso);
+}
+
+.login-error {
+    font-size: 0.72rem;
+    color: #F87171;
+    margin-top: 0.35rem;
+}
+
+.login-recordar {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8rem;
+    color: var(--hs-humo);
+    cursor: pointer;
+    margin-bottom: 1.35rem;
+    user-select: none;
+}
+
+.login-recordar input[type="checkbox"] {
+    accent-color: var(--hs-laton);
+    width: 0.95rem;
+    height: 0.95rem;
+    cursor: pointer;
+}
+
+.login-boton {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    background-color: var(--hs-cafe);
+    color: #FFFFFF;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.login-boton:hover {
+    background-color: var(--hs-cafe-hover);
+}
+
+.login-aviso-seguridad {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--hs-linea);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--hs-humo);
+    text-align: center;
+}
+
+.login-boton-secundario {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 1px solid var(--hs-linea);
+    color: var(--hs-humo);
+    text-decoration: none;
+    margin-top: 0.75rem;
+    padding: 0.55rem 1rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.login-boton-secundario:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: var(--hs-laton);
+    color: var(--hs-hueso);
+}
+
+@media (max-width: 900px) {
+    .login-lateral-banner {
+        display: none;
+    }
+    .login-lateral-form {
+        padding: 2rem 1.25rem;
+    }
+}

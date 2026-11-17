@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('web')->group(function () {
 
     Route::middleware('guest')->group(function () {
-        Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
-        Route::post('/login', [AuthController::class, 'login'])
-            ->middleware('throttle:5,1')
-            ->name('login.store');
+        // La autenticación principal se gestiona en routes/web.php con throttle:5,1
     });
 
     Route::middleware('auth')->group(function () {
