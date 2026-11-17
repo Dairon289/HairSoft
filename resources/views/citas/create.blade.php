@@ -62,7 +62,7 @@
                             @foreach($empleados as $empleado)
                                 @php $empleadoDisponible = strtolower($empleado->disponibilidad) === 'disponible'; @endphp
                                 <option value="{{ $empleado->id }}"
-                                        @selected(old('empleado_id') == $empleado->id)
+                                            @selected(old('empleado_id', request('empleado_id')) == $empleado->id)
                                         @disabled(! $empleadoDisponible)>
                                     {{ $empleado->nombreEmpleado }} {{ $empleado->apellidoEmpleado }}
                                     ({{ $empleadoDisponible ? 'disponible' : 'no disponible' }})
@@ -84,14 +84,16 @@
                                class="selector-fecha-hora cita-input @error('fecha_programada') is-invalid @enderror">
                     </div>
 
-                    <div class="cita-campo">
-                        <label for="estado" class="cita-label">Estado de la cita</label>
-                        <select id="estado" name="estado" required
-                                class="cita-input @error('estado') is-invalid @enderror">
-                            <option value="pendiente" @selected(old('estado', 'pendiente') === 'pendiente')>Pendiente</option>
-                            <option value="confirmada" @selected(old('estado') === 'confirmada')>Confirmada</option>
-                        </select>
-                    </div>
+                    @unless($esCliente)
+                        <div class="cita-campo">
+                            <label for="estado" class="cita-label">Estado de la cita</label>
+                            <select id="estado" name="estado" required
+                                    class="cita-input @error('estado') is-invalid @enderror">
+                                <option value="pendiente" @selected(old('estado', 'pendiente') === 'pendiente')>Pendiente</option>
+                                <option value="confirmada" @selected(old('estado') === 'confirmada')>Confirmada</option>
+                            </select>
+                        </div>
+                    @endunless
 
                 </div>
             </div>

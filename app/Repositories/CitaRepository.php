@@ -94,12 +94,17 @@ class CitaRepository
 
         return $cita;
     }
-
+    
     public function existeCruceHorario($empleadoId, $inicio, $fin, $citaIdExcluir = null)
     {
+        $limiteVencida = now()->subMinutes(Cita::MINUTOS_TOLERANCIA);
         $query = $this->model
             ->where('empleado_id', $empleadoId)
             ->where('estado', '!=', 'cancelada')
+            ->where(function ($ocupan) use ($limiteVencida) {
+                $ocupan->whereIn('estado', ['iniciada', 'finalizada'])
+                    ->orWhere('fecha_programada', '>=', $limiteVencida);
+            })
             ->whereRaw('COALESCE(fecha_inicio, fecha_programada) < ?', [$fin])
             ->whereRaw('COALESCE(fecha_fin, fecha_fin_programada) > ?', [$inicio]);
 
@@ -108,5 +113,18 @@ class CitaRepository
         }
 
         return $query->exists();
+    }
+
+    public function obtenerParaAgenda(?int $empleadoId, string $desde, string $hasta)
+    {
+        return $this->model
+            ->with(['cliente', 'detalleServicios.servicio'])
+            ->when($empleadoId, function ($query) use ($empleadoId) {
+                $query->where('empleado_id', $empleadoId);
+            })
+            ->where('fecha_programada', '>=', Carbon::parse($desde))
+            ->where('fecha_programada', '<', Carbon::parse($hasta))
+            ->orderBy('fecha_programada')
+            ->get();
     }
 }

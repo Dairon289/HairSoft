@@ -1,20 +1,21 @@
 <?php
 
 use App\Http\Controllers\AgendaController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\EmpleadoController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\GaleriaEmpleadoController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\Seguridad\AuthController;
 use App\Http\Controllers\ServicioController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $usuario = auth()->user();
+    $usuario = Auth::user();
 
     if ($usuario && $usuario->hasRole(config('seguridad.rol_empleado'))) {
         return redirect()->route('agenda.index');
@@ -52,12 +53,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/cliente/empleados', GaleriaEmpleadoController::class)
         ->name('cliente.empleados')
         ->middleware('role:cliente');
+
     Route::resource('empleados', EmpleadoController::class)->middleware('modulo:empleados');
+
     Route::resource('cliente', ClienteController::class)->middleware('modulo:clientes');
+
     Route::resource('servicio', ServicioController::class)->middleware('modulo:servicios');
 
-    Route::resource('citas', CitaController::class)->middleware('modulo:citas');
-
+    Route::resource('citas', CitaController::class)
+        ->except(['show', 'destroy'])
+        ->middleware('modulo:citas');
     Route::get('citas/{cita}/cancelar', [CitaController::class, 'formularioCancelar'])
         ->name('citas.cancelar.form')
         ->middleware('modulo:citas');

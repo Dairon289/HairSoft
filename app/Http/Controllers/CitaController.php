@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCitaRequest;
 use App\Models\Cita;
 use App\Services\CitaService;
 use App\Services\ClienteService;
@@ -65,7 +66,7 @@ class CitaController extends Controller
         return view('citas.index', compact('citas', 'servicios', 'desde', 'hasta', 'servicioId', 'pagoPendiente'));
     }
 
-    public function store(Request $request)
+    public function store(StoreCitaRequest $request)
     {
         $clienteCuenta = $this->clienteDeLaCuenta($request);
 
@@ -78,40 +79,29 @@ class CitaController extends Controller
             ]);
         }
 
-        $datosValidados = $request->validate([
-            'cliente_id' => 'required|exists:clientes,id',
-            'empleado_id' => [
-                'required',
-                Rule::exists('empleados', 'id')->where('disponibilidad', 'disponible'),
-            ],
-            'fecha_programada' => 'required|date',
-            'estado' => 'required|in:pendiente,confirmada,iniciada,finalizada',
-            'fecha_inicio' => 'nullable|date|required_if:estado,iniciada,finalizada',
-            'fecha_fin' => 'nullable|date|required_if:estado,finalizada|after:fecha_inicio',
-            'servicios' => 'required|array',
-            'servicios.*' => [
-                Rule::exists('servicios', 'id')->where('estadoServicio', 'activo'),
-            ],
-        ], [
-            'empleado_id.exists' => 'El empleado seleccionado no está disponible. Elige otro empleado.',
-            'servicios.*.exists' => 'Uno de los servicios seleccionados ya no está disponible. Elige otro e intenta de nuevo.',
-        ]);
-
-        $this->citaService->create($datosValidados);
+        $this->citaService->create($request->validated());
 
         return redirect()
             ->route('citas.index')
             ->with('mensaje', 'Cita creada correctamente.');
     }
 
-    public function edit(int $citas)
+    public function edit(Request $request, int $citas)
     {
+        $this->bloquearSiEsCliente($request);
+
         $citas = $this->citaService->obtenerPorId($citas);
 
         if ($citas->estado === 'cancelada') {
             return redirect()
                 ->route('citas.index')
                 ->with('error', 'Una cita cancelada no se puede editar. Solo puedes modificar su motivo de cancelación.');
+        }
+
+        if ($citas->estado === 'finalizada') {
+            return redirect()
+                ->route('citas.index')
+                ->with('error', 'Una cita finalizada no se puede editar. Puedes consultar su factura desde el listado.');
         }
 
         $idsActuales = $citas->detalleServicios
@@ -121,6 +111,7 @@ class CitaController extends Controller
 
         $clientes = $this->clienteService->listarTodo();
         $empleados = $this->empleadoService->listarTodo();
+
         $servicios = $this->servicioService->listarTodo()
             ->filter(fn ($servicio) => strtolower($servicio->estadoServicio) === 'activo'
                 || in_array((int) $servicio->id, $idsActuales, true))
@@ -131,16 +122,43 @@ class CitaController extends Controller
 
     public function update(Request $request, int $id)
     {
-        $idsActuales = $this->citaService->obtenerPorId($id)
-            ->detalleServicios
+        $this->bloquearSiEsCliente($request);
+
+        $cita = $this->citaService->obtenerPorId($id);
+
+        if (in_array($cita->estado, ['cancelada', 'finalizada'], true)) {
+            return redirect()
+                ->route('citas.index')
+                ->with('error', 'Esta cita ya no se puede editar.');
+        }
+
+        $idsActuales = $cita->detalleServicios
             ->pluck('servicio_id')
             ->map(fn ($servicioId) => (int) $servicioId)
             ->all();
 
+        if (! $cita->datosEditables()) {
+            $request->merge([
+                'cliente_id' => $cita->cliente_id,
+                'empleado_id' => $cita->empleado_id,
+                'fecha_programada' => $cita->fecha_programada?->format('Y-m-d H:i'),
+                'fecha_inicio' => $cita->fecha_inicio?->format('Y-m-d H:i'),
+                'servicios' => $idsActuales,
+            ]);
+        }
+
+        if ($cita->estado === 'pendiente') {
+            $request->merge(['fecha_inicio' => null]);
+        }
+ 
+        if ($cita->fecha_inicio === null) {
+            $request->merge(['fecha_fin' => null]);
+        }
+
         $datosValidados = $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'empleado_id' => 'required|exists:empleados,id',
-            'estado' => 'required|in:pendiente,confirmada,iniciada,finalizada',
+            'estado' => ['required', Rule::in($cita->estadosPermitidos())],
             'fecha_programada' => 'required|date',
             'fecha_inicio' => 'required_if:estado,iniciada,finalizada|nullable|date',
             'fecha_fin' => 'required_if:estado,finalizada|nullable|date|after:fecha_inicio',
@@ -149,11 +167,12 @@ class CitaController extends Controller
                 Rule::exists('servicios', 'id')->where(function ($query) use ($idsActuales) {
                     $query->where(function ($grupo) use ($idsActuales) {
                         $grupo->where('estadoServicio', 'activo')
-                              ->orWhereIn('id', $idsActuales);
+                            ->orWhereIn('id', $idsActuales);
                     });
                 }),
             ],
         ], [
+            'estado.in' => 'Estado no permitido: la cita solo puede avanzar al siguiente paso.',
             'servicios.*.exists' => 'Uno de los servicios seleccionados ya no está disponible. Quítalo e intenta de nuevo.',
         ]);
 
@@ -202,8 +221,10 @@ class CitaController extends Controller
         return view('citas.cancelar', compact('cita'));
     }
 
-    public function formularioMotivo(Cita $cita)
+    public function formularioMotivo(Request $request, Cita $cita)
     {
+        $this->bloquearSiEsCliente($request);
+
         if ($cita->estado !== 'cancelada') {
             return redirect()
                 ->route('citas.index')
@@ -215,6 +236,8 @@ class CitaController extends Controller
 
     public function actualizarMotivo(Request $request, Cita $cita): RedirectResponse
     {
+        $this->bloquearSiEsCliente($request);
+
         $datos = $request->validate([
             'motivoCancelacion' => 'required|string|min:5|max:100',
         ]);
@@ -272,6 +295,59 @@ class CitaController extends Controller
 
         if ($clienteCuenta !== null && (int) $cita->cliente_id !== $clienteCuenta) {
             abort(403);
+        }
+    }
+
+    public function iniciar(Request $request, Cita $cita): RedirectResponse
+    {
+        $this->verificarCitaDelEmpleado($request, $cita);
+
+        try {
+            $this->citaService->iniciar($cita->id);
+        } catch (\DomainException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'La cita fue iniciada correctamente.');
+    }
+
+    public function finalizar(Request $request, Cita $cita): RedirectResponse
+    {
+        $this->verificarCitaDelEmpleado($request, $cita);
+
+        try {
+            $this->citaService->finalizar($cita->id);
+        } catch (\DomainException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'La cita fue finalizada correctamente.');
+    }
+
+    private function verificarCitaDelEmpleado(Request $request, Cita $cita): void
+    {
+        $this->bloquearSiEsCliente($request, 'Solo el personal del salón puede iniciar o finalizar una cita.');
+
+        $usuario = $request->user();
+
+        if ($usuario->empleado_id !== null) {
+            if ((int) $cita->empleado_id !== (int) $usuario->empleado_id) {
+                abort(403);
+            }
+            return;
+        }
+
+        if ($usuario->hasRole(config('seguridad.rol_empleado'))) {
+            abort(403, 'Tu cuenta no está vinculada a un empleado. Pide al administrador que la vincule.');
+        }
+    }
+    
+    private function bloquearSiEsCliente(
+        Request $request,
+        string $mensaje = 'Como cliente puedes crear y cancelar tus citas y consultar tu factura, pero no editarlas. Si necesitas un cambio, comunícate con el salón.'
+    ): void {
+        if ($this->clienteDeLaCuenta($request) !== null) {
+            abort(403, $mensaje);
         }
     }
 }

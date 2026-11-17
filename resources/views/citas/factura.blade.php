@@ -6,11 +6,27 @@
 
 @push('styles')
     <style>
+        /* Marco fino alrededor del logo (el logo ya trae su propio fondo) */
+        .factura-logo-caja {
+            border: 1px solid var(--hs-linea);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .factura-logo {
+            display: block;
+            height: 5rem;
+            width: auto;
+            max-width: 9rem;
+            object-fit: contain;
+        }
+
         @media print {
             aside, nav, header, footer, .no-print { display: none !important; }
         }
     </style>
-@endpush
+@endpush qq
 
 @section('content')
 
@@ -25,13 +41,22 @@
 
             {{-- Encabezado --}}
             <div class="flex justify-between items-start mb-8">
-                <div>
-                    <h2 class="text-3xl font-bold text-gray-700">
-                        {{ $esFinal ? 'Factura' : 'Valor estimado' }} #{{ $cita->id }}
-                    </h2>
-                    <p class="text-sm text-gray-500 mt-1">
-                        Estado de la cita: {{ ucfirst($cita->estado) }}
-                    </p>
+                <div class="flex items-center gap-4">
+                    <div class="factura-logo-caja">
+                        <img src="{{ asset('img/logo-hairsoft.png') }}"
+                             alt="Logo HairSoft"
+                             class="factura-logo"
+                             onerror="this.parentElement.style.display='none'">
+                    </div>
+
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-700">
+                            {{ $esFinal ? 'Factura' : 'Valor estimado' }}
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">
+                            Estado de la cita: {{ ucfirst($cita->estado) }}
+                        </p>
+                    </div>
                 </div>
 
                 <div class="text-right text-sm text-gray-600">
