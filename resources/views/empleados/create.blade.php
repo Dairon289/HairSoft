@@ -15,7 +15,7 @@
 
 <div class="container mx-auto mt-4">
 
-    <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6">
 
         <h2 class="text-2xl font-bold text-center mb-4">
             Nuevo Empleado
@@ -70,7 +70,7 @@
                 <div class="mb-4">
                     <label for="horaIngreso" class="block mb-1 font-semibold">Hora Ingreso</label>
                     <input type="time" id="horaIngreso" name="horaIngreso" value="{{ old('horaIngreso') }}"
-                        class="w-full border rounded px-3 py-2 @error('horaIngreso') border-red-500 @enderror">
+                        class="w-full border rounded px-3 py-2 @error('horaIngreso') bo rder-red-500 @enderror">
                 </div>
 
                 <div class="mb-4">

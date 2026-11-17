@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\cliente;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreEmpleadoRequest;
+use App\Http\Requests\UpdateEmpleadoRequest;
 use App\Services\EmpleadoService;
 use App\Services\ServicioService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class EmpleadoController extends Controller
 {
@@ -18,49 +20,32 @@ class EmpleadoController extends Controller
         $this->servicio_service = $servicioservice;
     }
 
-    public function index()
+    public function index(): View
     {
         $empleado = $this->empleado_service->listarTodo();
 
         return view('empleados.index', compact('empleado'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
         $servicios = $this->servicio_service->listarTodo();
 
         return view('empleados.create', compact('servicios'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreEmpleadoRequest $request): RedirectResponse
     {
-        $this->validarServicios($request);
+        $validados = $request->validated();
+        $idsServicios = $validados['servicios'] ?? [];
+        unset($validados['servicios']);
 
-        $datos = $request->except('servicios');
-        $idsServicios = $request->input('servicios', []);
-
-        $this->empleado_service->guardar($datos, $idsServicios);
+        $this->empleado_service->guardar($validados, $idsServicios);
 
         return redirect()->route('empleados.index')->with('success', 'Empleado creado correctamente');
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show()
-    {
-        
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(int $id)
+    public function edit(int $id): View
     {
         $empleado = $this->empleado_service->buscarporid($id);
         $servicios = $this->servicio_service->listarTodo();
@@ -68,42 +53,23 @@ class EmpleadoController extends Controller
 
         return view('empleados.edit', compact('empleado', 'servicios', 'serviciosAsignados'));
     }
-    /**
-     * Update the specified resource in storage.
-     */
-    
-    public function update(Request $request, int $id)
+
+    public function update(UpdateEmpleadoRequest $request, int $id): RedirectResponse
     {
-        $this->validarServicios($request);
+        $validados = $request->validated();
+        $idsServicios = $validados['servicios'] ?? [];
+        unset($validados['servicios']);
 
-        $datos = $request->except('servicios');
-        $idsServicios = $request->input('servicios', []);
-
-        $this->empleado_service->actualizar($id, $datos);
+        $this->empleado_service->actualizar($id, $validados);
         $this->empleado_service->sincronizarServicios($id, $idsServicios);
 
         return redirect()->route('empleados.index')->with('successedit', 'Empleado actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $id)
+    public function destroy(int $id): RedirectResponse
     {
         $this->empleado_service->eliminar($id);
 
         return redirect()->route('empleados.index')->with('successdelete', 'Empleado eliminado correctamente');
-    }
-    
-    private function validarServicios(Request $request): void
-    {
-        $request->validate([
-            'servicios'   => 'required|array|min:1',
-            'servicios.*' => 'exists:servicios,id',
-        ], [
-            'servicios.required' => 'Selecciona al menos un servicio que ofrece el empleado.',
-            'servicios.min'      => 'Selecciona al menos un servicio que ofrece el empleado.',
-            'servicios.*.exists' => 'Uno de los servicios seleccionados no existe.',
-        ]);
     }
 }
