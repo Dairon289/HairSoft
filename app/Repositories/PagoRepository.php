@@ -9,7 +9,7 @@ class PagoRepository
     
     public function obtenerTodos()
     {
-        return Pago::with('cita.detalleServicios.servicio')->latest()->get();
+        return Pago::with(['cita.detalleServicios.servicio', 'cita.cliente', 'cita.empleado'])->latest()->get();
     }
 
     public function obtenerPorId(int $id): Pago

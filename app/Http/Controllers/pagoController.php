@@ -25,14 +25,16 @@ class PagoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $citas = Cita::pagables()
             ->with(['cliente', 'detalleServicios'])
             ->orderByDesc('fecha_programada')
             ->get();
 
-        return view('pagos.create', compact('citas'));
+        $citaSeleccionada = $request->query('cita_id');
+
+        return view('pagos.create', compact('citas', 'citaSeleccionada'));
     }
 
     /**
