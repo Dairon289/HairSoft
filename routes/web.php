@@ -1,22 +1,59 @@
 <?php
 
+use App\Http\Controllers\AgendaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CitaController;
+use App\Http\Controllers\GaleriaEmpleadoController;
 use App\Http\Controllers\PagoController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\Seguridad\AuthController;
 use App\Http\Controllers\ServicioController;
 
+Route::get('/', function () {
+    $usuario = auth()->user();
+
+    if ($usuario && $usuario->hasRole(config('seguridad.rol_empleado'))) {
+        return redirect()->route('agenda.index');
+    }
+
+    return view('welcome');
+})->name('welcome');
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('seguridad.login');
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:5,1')
+    ->name('login.post');
+
+Route::get('/registro', [AuthController::class, 'showRegisterForm'])->name('registro');
+Route::post('/registro', [AuthController::class, 'register'])->name('registro.post');
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard.index');
+    Route::get('/dashboard-legacy', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/admin/dashboard', [DashboardController::class, 'adminIndex'])->name('admin.dashboard');
-    Route::get('/cliente/dashboard', [DashboardController::class, 'index'])->name('cliente.dashboard');
-
-    Route::resource('cliente', ClienteController::class)->middleware('modulo:clientes');
+    // Perfil de Usuario (Admin, Empleado, Cliente)
+    Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/perfil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/perfil/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::get('/admin/dashboard', [DashboardController::class, 'adminIndex'])
+        ->name('admin.dashboard')
+        ->middleware('role:administrador'); 
+    Route::get('/cliente/dashboard', function () {
+        session()->reflash(); // conserva el mensaje de bienvenida del registro
+        return redirect()->route('citas.index');
+    })
+        ->name('cliente.dashboard')
+        ->middleware('role:cliente');
+    Route::get('/cliente/empleados', GaleriaEmpleadoController::class)
+        ->name('cliente.empleados')
+        ->middleware('role:cliente');
     Route::resource('empleados', EmpleadoController::class)->middleware('modulo:empleados');
+    Route::resource('cliente', ClienteController::class)->middleware('modulo:clientes');
     Route::resource('servicio', ServicioController::class)->middleware('modulo:servicios');
 
     Route::resource('citas', CitaController::class)->middleware('modulo:citas');
@@ -34,10 +71,21 @@ Route::middleware('auth')->group(function () {
     Route::patch('citas/{cita}/motivo', [CitaController::class, 'actualizarMotivo'])
         ->name('citas.motivo')
         ->middleware('modulo:citas');
-
+    Route::patch('citas/{cita}/iniciar', [CitaController::class, 'iniciar'])
+        ->name('citas.iniciar')
+        ->middleware('modulo:citas');
+    Route::patch('citas/{cita}/finalizar', [CitaController::class, 'finalizar'])
+        ->name('citas.finalizar')
+        ->middleware('modulo:citas');
     Route::get('citas/{id}/factura', [CitaController::class, 'factura'])
         ->name('citas.factura')
         ->middleware('modulo:citas');
+    Route::get('agenda', [AgendaController::class, 'index'])
+        ->name('agenda.index')
+        ->middleware('modulo:agenda');
+    Route::get('agenda/eventos', [AgendaController::class, 'eventos'])
+        ->name('agenda.eventos')
+        ->middleware('modulo:agenda');
 
     Route::resource('pagos', PagoController::class)
         ->only(['index', 'create', 'store', 'edit', 'update'])

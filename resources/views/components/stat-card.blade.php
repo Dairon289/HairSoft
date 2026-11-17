@@ -3,19 +3,24 @@
     <x-stat-card
         label="Total de usuarios"
         :value="$totalUsers"
+        description="Texto corto que explica qué cuenta la tarjeta"
         change="+12.4%"
         trend="up"
         icon="users"
     />
     trend: "up" | "down"
+    description, change y trend son opcionales
 --}}
-@props(['label', 'value', 'change' => null, 'trend' => 'up', 'icon' => 'chart'])
+@props(['label', 'value', 'description' => null, 'change' => null, 'trend' => 'up', 'icon' => 'chart'])
 
 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 sm:p-6">
     <div class="flex items-start justify-between">
         <div>
             <p class="text-sm font-medium text-slate-400">{{ $label }}</p>
             <p class="mt-2 text-2xl font-bold text-slate-800">{{ $value }}</p>
+            @if ($description)
+                <p class="mt-1 text-xs text-slate-400">{{ $description }}</p>
+            @endif
         </div>
         <div class="w-11 h-11 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center flex-shrink-0">
             <span class="w-5 h-5 block">@include('layouts.partials.icons', ['icon' => $icon])</span>
@@ -32,7 +37,7 @@
                 @endif
                 {{ $change }}
             </span>
-            <span class="text-slate-400">vs. mes anterior</span>
+            <span class="text-slate-400"></span>
         </div>
     @endif
 </div>

@@ -8,109 +8,81 @@
     {{-- Tarjetas estadísticas --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
         <x-stat-card
-            label="Total de usuarios"
-            :value="number_format($totalUsers)"
-            change="+12.4%"
-            trend="up"
-            icon="users"
-        />
-        <x-stat-card
-            label="Total de productos"
-            :value="number_format($totalProducts)"
-            change="+4.1%"
-            trend="up"
-            icon="box"
-        />
-        <x-stat-card
-            label="Ventas del mes"
-            :value="number_format($totalSales)"
-            change="-2.3%"
-            trend="down"
-            icon="chart"
-        />
-        <x-stat-card
-            label="Ingresos"
+            label="Ingresos del mes"
             :value="'$' . number_format($totalRevenue, 2)"
-            change="+8.7%"
-            trend="up"
+            description="Pagos cobrados en el mes actual."
+            :change="$revenueChange"
+            :trend="$revenueTrend"
+            icon="tag"
+        />
+        <x-stat-card
+            label="Pagos pendientes"
+            :value="'$' . number_format($pagosPendientes, 2)"
+            description="Total por cobrar de pagos aún no pagados."
+            icon="tag"
+        />
+        <x-stat-card
+            label="Citas de hoy"
+            :value="$citasHoy"
+            description="Citas programadas para hoy, sin las canceladas."
+            icon="tag"
+        />
+        <x-stat-card
+            label="Clientes nuevos del mes"
+            :value="$clientesNuevos"
+            description="Clientes registrados durante este mes."
             icon="tag"
         />
     </div>
 
     {{-- Gráficos --}}
-    <div class="mt-6 grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
-
-        <x-card title="Ventas mensuales" subtitle="Últimos 6 meses" class="xl:col-span-2">
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:gap-6">
+        <x-card title="Ventas mensuales" subtitle="Últimos 6 meses">
             <canvas id="salesChart" height="110" role="img" aria-label="Gráfico de ventas mensuales"></canvas>
         </x-card>
-
-        <x-card title="Productos por categoría">
-            <canvas id="categoryChart" height="200" role="img" aria-label="Gráfico de productos por categoría"></canvas>
-        </x-card>
     </div>
 
-    <div class="mt-6 grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
-        <x-card title="Usuarios registrados" subtitle="Últimos 6 meses" class="xl:col-span-3">
-            <canvas id="usersChart" height="90" role="img" aria-label="Gráfico de usuarios registrados"></canvas>
-        </x-card>
-    </div>
-
-    {{-- Tabla de actividad reciente --}}
+    {{-- Últimas citas --}}
     <div class="mt-6">
-        <x-card title="Actividad reciente" subtitle="Últimos registros del sistema" :padding="false">
-            <x-slot:actions>
-                <x-button variant="secondary" href="#">Ver todo</x-button>
-            </x-slot:actions>
+        <x-card title="Últimas citas" subtitle="Las 5 citas creadas más recientemente" :padding="false">
 
-            <x-table :headers="['Usuario', 'Descripción', 'Estado', 'Fecha', 'Acciones']">
-                @forelse ($recentActivity as $item)
+            <x-table :headers="['Cliente', 'Estado', 'Fecha programada']">
+                @forelse ($ultimasCitas as $cita)
+                    @php
+                        $nombreCliente = trim($cita->nombre . ' ' . $cita->apellido);
+                        $estilosEstado = [
+                            'pendiente'  => 'bg-amber-50 text-amber-700 border-amber-200',
+                            'confirmada' => 'bg-sky-50 text-sky-700 border-sky-200',
+                            'iniciada'   => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                            'finalizada' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                            'cancelada'  => 'bg-red-50 text-red-700 border-red-200',
+                        ];
+                        $estilo = $estilosEstado[$cita->estado] ?? 'bg-slate-50 text-slate-600 border-slate-200';
+                    @endphp
                     <tr class="hover:bg-slate-50">
                         <td class="px-5 py-3.5">
                             <div class="flex items-center gap-3">
                                 <img
-                                    src="{{ $item['avatar'] }}"
+                                    src="https://ui-avatars.com/api/?name={{ urlencode($nombreCliente) }}"
                                     class="w-8 h-8 rounded-full object-cover ring-1 ring-slate-100"
-                                    alt="Avatar de {{ $item['name'] }}"
+                                    alt="Avatar de {{ $nombreCliente }}"
                                 >
-                                <span class="font-medium text-slate-700 whitespace-nowrap">{{ $item['name'] }}</span>
+                                <span class="font-medium text-slate-700 whitespace-nowrap">{{ $nombreCliente }}</span>
                             </div>
                         </td>
-                        <td class="px-5 py-3.5 text-slate-500 max-w-xs truncate">{{ $item['description'] }}</td>
-                        <td class="px-5 py-3.5"><x-badge :status="$item['status']" /></td>
-                        <td class="px-5 py-3.5 text-slate-500 whitespace-nowrap">{{ $item['date'] }}</td>
                         <td class="px-5 py-3.5">
-                            <div class="flex items-center gap-1">
-                                <a href="#" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500" aria-label="Ver {{ $item['name'] }}">
-                                    <span class="w-4 h-4 block">@include('layouts.partials.icons', ['icon' => 'eye'])</span>
-                                </a>
-                                <a href="#" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500" aria-label="Editar {{ $item['name'] }}">
-                                    <span class="w-4 h-4 block">@include('layouts.partials.icons', ['icon' => 'pencil'])</span>
-                                </a>
-                                <button
-                                    type="button"
-                                    @click="$dispatch('open-modal', 'delete-{{ $loop->index }}')"
-                                    class="p-1.5 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                                    aria-label="Eliminar {{ $item['name'] }}"
-                                >
-                                    <span class="w-4 h-4 block">@include('layouts.partials.icons', ['icon' => 'trash'])</span>
-                                </button>
-
-                                <x-modal name="delete-{{ $loop->index }}" title="Eliminar registro" maxWidth="sm">
-                                    <p class="text-sm text-slate-500">
-                                        ¿Seguro que deseas eliminar a <strong>{{ $item['name'] }}</strong>? Esta acción no se puede deshacer.
-                                    </p>
-                                    <x-slot:footer>
-                                        <x-button variant="secondary" @click="show = false">Cancelar</x-button>
-                                        <x-button variant="danger">Eliminar</x-button>
-                                    </x-slot:footer>
-                                </x-modal>
-                            </div>
+                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium {{ $estilo }}">
+                                {{ ucfirst($cita->estado) }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3.5 text-slate-500 whitespace-nowrap">
+                            {{ \Carbon\Carbon::parse($cita->fecha_programada)->format('d/m/Y h:i A') }}
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-5 py-10 text-center text-sm text-slate-400">
-                            No hay actividad reciente.
+                        <td colspan="3" class="px-5 py-10 text-center text-sm text-slate-400">
+                            No hay citas registradas.
                         </td>
                     </tr>
                 @endforelse
@@ -165,21 +137,6 @@
             }
         });
 
-        new Chart(document.getElementById('categoryChart'), {
-            type: 'doughnut',
-            data: {
-                labels: @json($chartData['categoryLabels']),
-                datasets: [{
-                    data: @json($chartData['categoryValues']),
-                    backgroundColor: ['#4f46e5', '#818cf8', '#c7d2fe', '#a5b4fc', '#312e81'],
-                    borderWidth: 0,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 16, font: { size: 11 } } } }
-            }
-        });
     });
 </script>
 @endpush
