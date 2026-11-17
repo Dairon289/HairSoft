@@ -19,6 +19,7 @@ class User extends Authenticatable
         'email',
         'password',
         'cliente_id',
+        'empleado_id',
     ];
 
     protected $hidden = [
@@ -29,6 +30,11 @@ class User extends Authenticatable
     public function cliente(): BelongsTo
     {
         return $this->belongsTo(Cliente::class);
+    }
+
+    public function empleado(): BelongsTo
+    {
+        return $this->belongsTo(Empleado::class);
     }
 
     protected function casts(): array
