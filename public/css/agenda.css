@@ -1,0 +1,136 @@
+.hs-agenda .fc {
+    --fc-page-bg-color: var(--hs-grafito);
+    --fc-neutral-bg-color: var(--hs-panel);
+    --fc-neutral-text-color: var(--hs-humo);
+    --fc-border-color: var(--hs-linea);
+
+    --fc-button-text-color: var(--hs-hueso);
+    --fc-button-bg-color: var(--hs-panel);
+    --fc-button-border-color: var(--hs-linea);
+    --fc-button-hover-bg-color: var(--hs-linea);
+    --fc-button-hover-border-color: var(--hs-humo);
+    --fc-button-active-bg-color: var(--hs-laton);
+    --fc-button-active-border-color: var(--hs-laton);
+
+    --fc-today-bg-color: rgba(194, 192, 188, 0.06);
+    --fc-now-indicator-color: #3b82f6;
+
+    --fc-more-link-bg-color: var(--hs-panel);
+    --fc-more-link-text-color: var(--hs-hueso);
+}
+
+/* Indicador de hora actual moderno, visible y con animación */
+.hs-agenda .fc .fc-timegrid-now-indicator-line {
+    border-color: #3b82f6 !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+    z-index: 5;
+}
+
+.hs-agenda .fc .fc-timegrid-now-indicator-arrow {
+    border-color: #3b82f6 transparent transparent #3b82f6 !important;
+    border-width: 6px !important;
+    filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.8));
+    z-index: 5;
+}
+
+/* Barra de herramientas compacta */
+.hs-agenda .fc-header-toolbar {
+    margin-bottom: 0.65rem !important;
+}
+
+.hs-agenda .fc-toolbar-title {
+    font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-size: 1.1rem !important;
+    color: var(--hs-hueso);
+}
+
+/* Botones más proporcionados */
+.hs-agenda .fc .fc-button {
+    padding: 0.3rem 0.7rem !important;
+    font-size: 0.8rem !important;
+    border-radius: 0.4rem !important;
+}
+
+.hs-agenda .fc .fc-button-primary:not(:disabled).fc-button-active,
+.hs-agenda .fc .fc-button-primary:not(:disabled):active {
+    color: var(--hs-carbon);
+}
+
+.hs-agenda .fc .fc-button-primary:focus {
+    box-shadow: 0 0 0 2px rgba(236, 231, 222, 0.25);
+}
+
+/* Encabezados de día más compactos */
+.hs-agenda .fc-col-header-cell {
+    background: var(--hs-panel);
+    padding: 0.35rem 0 !important;
+}
+
+.hs-agenda .fc-col-header-cell-cushion,
+.hs-agenda .fc-daygrid-day-number {
+    color: var(--hs-hueso-tenue);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+/* Etiquetas de horas más discretas */
+.hs-agenda .fc-timegrid-slot-label-cushion,
+.hs-agenda .fc-timegrid-axis-cushion {
+    color: var(--hs-humo);
+    font-size: 0.72rem;
+}
+
+/* Altura compacta de las filas de turnos (adaptada para ver la jornada) */
+.hs-agenda .fc-timegrid-slot {
+    height: 1.55em !important;
+}
+
+.hs-agenda .fc-timegrid-slot-minor {
+    border-top-color: rgba(54, 60, 68, 0.4);
+}
+
+/* Citas */
+.hs-agenda .fc-event {
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    padding: 1px 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.hs-agenda .fc-event:hover {
+    filter: brightness(1.1);
+}
+
+/* Ventana emergente de "más citas" (vista Mes) */
+.hs-agenda .fc-popover {
+    background: var(--hs-grafito);
+    border-color: var(--hs-linea);
+}
+
+.hs-agenda .fc-popover-header {
+    background: var(--hs-panel);
+    color: var(--hs-hueso);
+}
+
+/* Contenedor principal de la agenda */
+.hs-agenda-contenedor {
+    background: var(--hs-panel);
+    border: 1px solid var(--hs-linea);
+}
+
+/* Modal y subpaneles adaptados a los tokens HairSoft */
+.hs-modal-ventana {
+    background: var(--hs-panel);
+    border: 1px solid var(--hs-linea);
+    color: var(--hs-hueso);
+}
+
+.hs-modal-caja-dato {
+    background: var(--hs-grafito);
+    border: 1px solid var(--hs-linea);
+}

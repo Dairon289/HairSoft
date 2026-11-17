@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Traits\HasRoles;
 
 class Cliente extends Model implements AuthenticatableContract
 {
     use Authenticatable;
+    use HasRoles;
 
     protected $table = 'clientes';
 
@@ -32,5 +34,10 @@ class Cliente extends Model implements AuthenticatableContract
     public function citas()
     {
         return $this->hasMany(Cita::class);
+    }
+
+    public function usuario()
+    {
+        return $this->hasOne(User::class, 'cliente_id');
     }
 }

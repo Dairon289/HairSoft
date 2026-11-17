@@ -8,9 +8,10 @@ class Empleado extends Model
 {
     protected $table = 'empleados';
 
-    protected $fillable = [
+        protected $fillable = [
         'nombreEmpleado',
         'apellidoEmpleado',
+        'especialidad',
         'correoEmpleado',
         'telefonoEmpleado',
         'disponibilidad',
@@ -23,5 +24,10 @@ class Empleado extends Model
     public function servicios()
     {
         return $this->belongsToMany(Servicio::class, 'empleadoServicio');
+    }
+
+    public function usuario()
+    {
+        return $this->hasOne(User::class, 'empleado_id');
     }
 }

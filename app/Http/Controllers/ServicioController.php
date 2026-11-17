@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreServicioRequest;
+use App\Http\Requests\UpdateServicioRequest;
 use App\Models\servicio;
-use Illuminate\Http\Request;
 use App\Services\ServicioService;
+use Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ServicioController extends Controller
 {
-    
     private ServicioService $servicio_service;
 
     public function __construct(ServicioService $servicioservice)
@@ -16,75 +19,46 @@ class ServicioController extends Controller
         $this->servicio_service = $servicioservice;
     }
 
-
-    public function index()
+    public function index(): View
     {
         $servicios = $this->servicio_service->listarTodo();
 
         return view('servicios.index', compact('servicios'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
         return view('servicios.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreServicioRequest $request): RedirectResponse
     {
-        $datos = $request->all();
-
-        $this->servicio_service->guardar($datos);
+        $this->servicio_service->guardar($request->validated());
 
         return redirect()->route('servicio.index')->with('success', 'Servicio creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show()
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(int $id ,servicio $servicios)
+    public function edit(int $id): View
     {
         $servicios = $this->servicio_service->buscarporid($id);
 
         return view('servicios.edit', compact('servicios'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(int $id , Request $request )
+    public function update(UpdateServicioRequest $request, int $id): RedirectResponse
     {
-       $datos = $request->all();
+        $this->servicio_service->actualizar($id, $request->validated());
 
-        $this->servicio_service->actualizar($id, $datos);
-
-        return redirect()->route('servicio.index')->with('successedit', 'servicio actualizado correctamente');
+        return redirect()->route('servicio.index')->with('successedit', 'Servicio actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $id)
+    public function destroy(int $id): RedirectResponse
     {
         try {
             $this->servicio_service->eliminar($id);
-        } catch (\Exception $e) {
-            return redirect()->route('servicio.index')->with('errordelete', $e->getMessage());
+            return redirect()->route('servicio.index')->with('successdelete', 'Servicio eliminado correctamente');
+        } catch (Exception $e) {
+            return redirect()->route('servicio.index')->with('error', $e->getMessage());
         }
-
-        return redirect()->route('servicio.index')->with('successdelete', 'Servicio eliminado correctamente');
     }
 }

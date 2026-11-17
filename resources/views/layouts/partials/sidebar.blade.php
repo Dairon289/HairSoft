@@ -1,83 +1,178 @@
-{{--
-    Sidebar principal.
-    Usa la variable de ruta actual (Route::currentRouteName() o request()->routeIs())
-    para resaltar el enlace activo.
---}}
 <aside
     x-cloak
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-    class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 transform transition-transform duration-200 ease-in-out lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-40 w-64 hs-sidebar
+           transform transition-transform
+           duration-200 ease-in-out lg:translate-x-0"
     aria-label="Menú principal"
 >
     <div class="h-full flex flex-col">
 
-        {{-- Logo --}}
-        <div class="flex items-center gap-3 h-16 px-6 border-b border-slate-800">
-            <div class="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold">
-                A
-            </div>
-            <span class="text-white font-semibold text-lg tracking-tight">{{ config('app.name', 'AdminPanel') }}</span>
+        <div class="flex items-center gap-3 h-20 px-6 border-b hs-borde">
+
+            <img src="{{ asset('img/logo-emblema.png') }}"
+                alt="Logo de {{ config('app.name', 'HairSoft') }}"
+                class="w-10 h-10 rounded-xl shadow-md"
+            >
+
+            <span class="hs-marca text-2xl">
+                {{ config('app.name', 'HairSoft') }}
+            </span>
+
         </div>
 
-        {{-- Navegación --}}
-        <nav class="flex-1 overflow-y-auto px-3 py-6 space-y-1" aria-label="Navegación lateral">
+        <!-- Navegación -->
+        <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-7"
+             aria-label="Navegación lateral">
 
             @php
-                $links = [
-                    ['label' => 'Dashboard',   'route' => 'dashboard.index',  'icon' => 'home'],
-                    ['label' => 'Empleados',    'route' => 'empleados.index',      'icon' => 'users'],
-                    ['label' => 'Perfiles/Roles', 'route' => 'roles.index',   'icon' => 'shield'],
-                    ['label' => 'Clientes',  'route' => 'cliente.index', 'icon' => 'users'],
-                    ['label' => 'Servicios',   'route' => 'servicio.index',   'icon' => 'service'],
-                    ['label' => 'Citas',    'route' => 'citas.index',    'icon' => 'chart'],
-                    ['label' => 'Pagos',    'route' => 'pagos.index',    'icon' => 'chart'],
-                    ['label' => 'Configuración', 'route' => 'settings.index', 'icon' => 'cog'],
-                    ['label' => 'Reportes', 'route' => 'reportes.ingresos', 'icon' => 'chart'],
+                $groups = [
+                    [
+                        'title' => 'PRINCIPAL',
+                        'links' => [
+                            ['label' => 'Dashboard', 'route' => 'dashboard.index', 'icon' => 'home'],
+                        ],
+                    ],
+                    [
+                        'title' => 'GESTIÓN',
+                        'links' => [
+                            ['label' => 'Servicios', 'route' => 'servicio.index', 'icon' => 'scissors', 'can' => ['ver servicios']],
+                            ['label' => 'Empleados', 'route' => 'empleados.index', 'icon' => 'id-card', 'can' => ['ver empleados']],
+                            ['label' => 'Nuestro equipo', 'route' => 'cliente.empleados', 'icon' => 'user-group', 'rol' => 'cliente'],
+                            ['label' => 'Clientes', 'route' => 'cliente.index', 'icon' => 'user-group', 'can' => ['ver clientes']],
+                            ['label' => 'Agenda', 'route' => 'agenda.index', 'icon' => 'calendar', 'can' => ['ver agenda']],
+                            ['label' => 'Citas', 'route' => 'citas.index', 'icon' => 'calendar', 'can' => ['ver citas']],
+                            ['label' => 'Pagos', 'route' => 'pagos.index', 'icon' => 'credit-card', 'can' => ['ver pagos']],
+                        ],
+                    ],
+                    [
+                        'title' => 'ADMINISTRACIÓN',
+                        'links' => [
+                            [
+                                'label' => 'Perfiles y roles',
+                                'route' => 'seguridad.roles.index',
+                                'icon' => 'shield-user',
+                                'can' => ['gestionar seguridad'],
+                            ],
+                            [
+                                'label' => 'Configuración',
+                                'route' => 'settings.index',
+                                'icon' => 'cog',
+                                'can' => ['gestionar seguridad'],
+                            ],
+                            [
+                                'label' => 'Gestión de usuarios',
+                                'route' => 'seguridad.permisos.index',
+                                'icon' => 'user-settings',
+                                'can' => ['gestionar seguridad'],
+                            ],
+                        ],
+                    ],
                 ];
             @endphp
-            
-            @php
-                $links = collect($links)
-                    ->filter(fn ($link) => \Illuminate\Support\Facades\Route::has($link['route']))
-                    ->values()
-                    ->all();
-            @endphp
 
-            @foreach ($links as $link)
+            @foreach ($groups as $group)
+
                 @php
-                    $active = Route::has($link['route']) && request()->routeIs(explode('.', $link['route'])[0] . '.*');
+                    $visibleLinks = collect($group['links'])
+                        ->filter(function ($link) {
+                            $routeExists = Route::has($link['route']);
+
+                            $hasPermission = empty($link['can'])
+                                || (auth()->check() && auth()->user()->canAny($link['can']));
+
+                            $hasRole = empty($link['rol'])
+                                || (auth()->check() && auth()->user()->hasRole($link['rol']));
+
+                            return $routeExists && $hasPermission && $hasRole;
+                        });
                 @endphp
-                <a
-                    href="{{ Route::has($link['route']) ? route($link['route']) : '#' }}"
-                    @if($active) aria-current="page" @endif
-                    class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                        {{ $active
-                            ? 'bg-primary-600 text-white shadow-sm'
-                            : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"
-                >
-                    <span class="w-5 h-5 flex-shrink-0" aria-hidden="true">
-                        @include('layouts.partials.icons', ['icon' => $link['icon']])
-                    </span>
-                    <span>{{ $link['label'] }}</span>
-                </a>
+
+                @if ($visibleLinks->isNotEmpty())
+
+                    <div class="space-y-2">
+
+                        <!-- Nombre del grupo -->
+                        <p class="px-3 text-xs font-bold tracking-wider hs-grupo">
+                            {{ $group['title'] }}
+                        </p>
+
+                        @foreach ($visibleLinks as $link)
+
+                            @php
+                                $active = request()->routeIs(
+                                    empty($link['rol'])
+                                        ? explode('.', $link['route'])[0] . '.*'
+                                        : $link['route']
+                                );
+                            @endphp
+
+                            <a
+                                href="{{ route($link['route']) }}"
+                                @click="sidebarOpen = false"
+                                @if ($active) aria-current="page" @endif
+                                class="group flex items-center gap-3
+                                       px-4 py-3 rounded-xl text-sm
+                                       font-medium transition duration-200
+                                       hs-enlace {{ $active ? 'hs-enlace--activo' : '' }}"
+                            >
+
+                                <span class="w-5 h-5 flex-shrink-0"
+                                      aria-hidden="true">
+                                    @include('layouts.partials.icons', [
+                                        'icon' => $link['icon']
+                                    ])
+                                </span>
+
+                                <span>{{ $link['label'] }}</span>
+
+                            </a>
+
+                        @endforeach
+
+                    </div>
+
+                @endif
+
             @endforeach
+
         </nav>
 
-        {{-- Cerrar sesión --}}
-        <div class="px-3 py-4 border-t border-slate-800">
-            <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}">
-                @csrf
-                <button
-                    type="submit"
-                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    aria-label="Cerrar sesión"
-                >
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Cerrar sesión
-                </button>
-            </form>
+        <!-- Cerrar sesión -->
+        <div class="px-4 py-5 border-t hs-borde">
+
+            @if (Route::has('logout'))
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="w-full flex items-center gap-3 px-4 py-3
+                               rounded-xl text-sm font-medium
+                               transition duration-200
+                               hs-enlace hs-enlace--salir"
+                        aria-label="Cerrar sesión"
+                    >
+
+                        <svg class="w-5 h-5" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+
+                        </svg>
+
+                        Cerrar sesión
+
+                    </button>
+
+                </form>
+
+            @endif
+
         </div>
     </div>
 </aside>

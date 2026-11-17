@@ -1,0 +1,241 @@
+.cita-wrap {
+    --carbon: #14171A;
+    --grafito: #1F2328;
+    --panel: #262B31;
+    --linea: #363C44;
+    --hueso: #ECE7DE;
+    --humo: #9BA1A8;
+    --laton: #ECE7DE;
+    --laton-claro: #72a9c5;
+    --error: #E5675F;
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 0.5rem 1rem;
+}
+
+.cita-panel {
+    background: var(--grafito);
+    color: var(--hueso);
+    border: 1px solid var(--linea);
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 18px 40px -18px rgba(20, 23, 26, 0.55);
+}
+
+.cita-cabecera { margin-bottom: 1rem; }
+
+.cita-titulo {
+    font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+    font-size: 2.25rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    margin: 0;
+    color: var(--hueso);
+}
+
+.cita-titulo::after {
+    content: '';
+    display: block;
+    width: 3rem;
+    height: 3px;
+    background: var(--laton);
+    margin-top: 0.75rem;
+}
+
+.cita-subtitulo {
+    margin: 0.75rem 0 0;
+    color: var(--humo);
+    font-size: 0.95rem;
+}
+
+.cita-errores {
+    background: rgba(229, 103, 95, 0.12);
+    border: 1px solid rgba(229, 103, 95, 0.55);
+    color: #F4C2BE;
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.92rem;
+}
+
+.cita-errores ul { margin: 0; padding-left: 1.1rem; list-style: disc; }
+
+.cita-grupo {
+    padding: 0.5rem 0;
+    border-top: 01px solid var(--linea);
+}
+
+.cita-fila {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.25rem;
+}
+
+.cita-campo { display: flex; flex-direction: column; gap: 0.45rem; }
+
+.cita-label { font-size: 0.9rem; font-weight: 600; color: var(--hueso); }
+
+.cita-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--carbon);
+    color: var(--hueso);
+    border: 1px solid var(--linea);
+    border-radius: 8px;
+    padding: 0.7rem 0.85rem;
+    font: inherit;
+    font-size: 0.95rem;
+    color-scheme: dark;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cita-input:focus {
+    outline: none;
+    border-color: var(--laton);
+    box-shadow: 0 0 0 3px rgba(201, 162, 77, 0.25);
+}
+
+.cita-input.is-invalid { border-color: var(--error); }
+.cita-input option:disabled { color: var(--humo); }
+
+.cita-selector { position: relative; }
+
+.cita-selector-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    cursor: pointer;
+}
+
+.cita-opciones {
+    position: absolute;
+    z-index: 20;
+    left: 0;
+    right: 0;
+    margin-top: 0.35rem;
+    max-height: 15rem;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--linea);
+    border-radius: 8px;
+    box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.6);
+}
+
+.cita-opcion {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    cursor: pointer;
+    color: var(--hueso);
+    font-size: 0.93rem;
+}
+
+.cita-opcion:hover { background: rgba(201, 162, 77, 0.12); }
+
+.cita-opcion input {
+    accent-color: var(--laton);
+    width: 1rem;
+    height: 1rem;
+}
+
+.cita-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+
+.cita-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(201, 162, 77, 0.14);
+    border: 1px solid rgba(201, 162, 77, 0.4);
+    color: var(--hueso);
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+}
+
+.cita-chip button {
+    background: none;
+    border: 0;
+    color: var(--laton);
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.cita-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 1rem 1.25rem;
+    border: 2px dashed var(--laton);
+    border-radius: 10px;
+}
+
+.cita-total-label { color: var(--humo); font-weight: 600; }
+
+.cita-total-monto {
+    font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--laton);
+}
+
+.cita-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--linea);
+}
+
+.cita-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.4rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.cita-btn:focus-visible { outline: 2px solid var(--hueso); outline-offset: 2px; }
+
+.cita-btn-sec { color: var(--hueso); border-color: var(--linea); background: transparent; }
+.cita-btn-sec:hover { border-color: var(--humo); background: rgba(236, 231, 222, 0.06); }
+
+.cita-btn-pri { background: var(--laton); color: var(--carbon); }
+.cita-btn-pri:hover { background: var(--laton-claro); }
+
+/* Calendario (flatpickr): el prefijo .flatpickr-calendar sube la prioridad
+   para que estos colores no los pise el CSS de la librería. */
+.flatpickr-calendar .flatpickr-day.selected,
+.flatpickr-calendar .flatpickr-day.selected:hover {
+    background: #C9A24D;
+    border-color: #C9A24D;
+    color: #14171A;
+}
+
+.flatpickr-calendar .flatpickr-day.today { border-color: #C9A24D; }
+
+@media (max-width: 480px) {
+    .cita-panel { padding: 1.25rem; }
+    .cita-titulo { font-size: 1.9rem; }
+    .cita-total-monto { font-size: 1.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cita-input, .cita-btn { transition: none; }
+}

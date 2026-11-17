@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\cliente;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreClienteRequest;
+use App\Http\Requests\UpdateClienteRequest;
 use App\Services\ClienteService;
 use Illuminate\Database\QueryException;
-use Illuminate\Validation\Rule;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ClienteController extends Controller
 {
@@ -17,101 +18,49 @@ class ClienteController extends Controller
         $this->cliente_service = $clienteservice;
     }
 
-    public function index()
+    public function index(): View
     {
         $clientes = $this->cliente_service->listarTodo();
 
         return view('clientes.index', compact('clientes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
         return view('clientes.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreClienteRequest $request): RedirectResponse
     {
-        $datos = $request->validate([
-            'nombre'   => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'correo'   => 'required|email|max:255|unique:clientes,correo',
-            'telefono' => 'required|string|max:255',
-            'rol'      => 'required|in:cliente,administrador',
-            'estado'   => 'required|in:activo,inactivo',
-            'password' => 'required|string|min:8',
-        ]);
-
-        $this->cliente_service->guardar($datos);
+        $this->cliente_service->guardar($request->validated());
 
         return redirect()->route('cliente.index')->with('success', 'Cliente creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show()
-    {
-        
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(int $id)
+    public function edit(int $id): View
     {
         $cliente = $this->cliente_service->buscarporid($id);
 
         return view('clientes.edit', compact('cliente'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, int $id)
+    public function update(UpdateClienteRequest $request, int $id): RedirectResponse
     {
-        $datos = $request->validate([
-            'nombre'   => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'correo'   => ['required', 'email', 'max:255', Rule::unique('clientes', 'correo')->ignore($id)],
-            'telefono' => 'required|string|max:255',
-            'rol'      => 'required|in:cliente,administrador',
-            'estado'   => 'required|in:activo,inactivo',
-            'password' => 'nullable|string|min:8',
-        ]);
+        $this->cliente_service->actualizar($id, $request->validated());
 
-        if (empty($datos['password'])) {
-            unset($datos['password']);
-        }
+        return redirect()->route('cliente.index')->with('successedit', 'Cliente actualizado correctamente');
+    }
 
-        $this->cliente_service->actualizar($id, $datos);
-
-        return redirect()->route('cliente.index')->with('success', 'Cliente actualizado correctamente');
-    }   
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $id)
+    public function destroy(int $id): RedirectResponse
     {
         try {
             $this->cliente_service->eliminar($id);
+            return redirect()->route('cliente.index')->with('successdelete', 'Cliente eliminado correctamente');
         } catch (QueryException $e) {
-            report($e);
-
-            return redirect()->route('cliente.index')
-                ->with('errordelete', 'No se pudo eliminar el cliente por un problema con la base de datos. Inténtalo de nuevo.');
-        } catch (\Exception $e) {
-            return redirect()->route('cliente.index')
-                ->with('errordelete', $e->getMessage());
+            if ($e->getCode() === '23000') {
+                return redirect()->route('cliente.index')->with('error', 'No se puede eliminar el cliente porque tiene citas registradas.');
+            }
+            return redirect()->route('cliente.index')->with('error', 'Error al eliminar el cliente.');
         }
-
-        return redirect()->route('cliente.index')
-            ->with('successdelete', 'Cliente eliminado correctamente');
     }
 }

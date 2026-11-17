@@ -1,5 +1,89 @@
 {{-- Set de iconos SVG (Heroicons outline, inline para no depender de paquetes extra) --}}
+
 @switch($icon)
+
+    @case('scissors')
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                class="w-full h-full">
+            <circle cx="6" cy="6" r="3" stroke-width="2"/>
+            <circle cx="6" cy="18" r="3" stroke-width="2"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8.2 8.2L20 20M8.2 15.8L20 4"/>
+        </svg>
+        @break
+
+    @case('calendar')
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                class="w-full h-full">
+            <rect x="3" y="5" width="18" height="16" rx="2"
+                    stroke-width="2"/>
+            <path stroke-linecap="round" stroke-width="2"
+                    d="M16 3v4M8 3v4M3 10h18"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2" d="M8 14h3v3"/>
+        </svg>
+        @break
+
+    @case('user-group')
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                class="w-full h-full">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+            <circle cx="10" cy="7" r="4" stroke-width="2"/>
+            <path stroke-linecap="round" stroke-width="2"
+                    d="M20 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+        @break
+
+    @case('id-card')
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                class="w-full h-full">
+            <rect x="3" y="4" width="18" height="16" rx="2"
+                    stroke-width="2"/>
+            <circle cx="9" cy="10" r="2" stroke-width="2"/>
+            <path stroke-linecap="round" stroke-width="2"
+                    d="M6 16a3 3 0 016 0m3-7h3m-3 4h3"/>
+        </svg>
+        @break
+
+    @case('shield-user')
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                class="w-full h-full">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <circle cx="12" cy="9" r="2" stroke-width="2"/>
+            <path stroke-linecap="round" stroke-width="2"
+                    d="M8.5 15a4 4 0 017 0"/>
+        </svg>
+        @break
+
+    @case('credit-card')
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                class="w-full h-full">
+            <rect x="2" y="5" width="20" height="14" rx="2"
+                    stroke-width="2"/>
+            <path stroke-width="2" d="M2 10h20"/>
+            <path stroke-linecap="round" stroke-width="2"
+                    d="M6 15h4"/>
+        </svg>
+        @break
+
+    @case('user-settings')
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                class="w-full h-full">
+            <circle cx="9" cy="8" r="4" stroke-width="2"/>
+            <path stroke-linecap="round" stroke-width="2"
+                    d="M2 21v-2a7 7 0 0110-6.32"/>
+            <circle cx="18" cy="17" r="3" stroke-width="2"/>
+            <path stroke-linecap="round" stroke-width="2"
+                    d="M18 12v2m0 6v2m5-5h-2m-6 0h-2"/>
+        </svg>
+        @break
+
+    {{-- ===== Íconos anteriores (restaurados) ===== --}}
     @case('home')
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-full h-full"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h4a1 1 0 001-1V10" /></svg>
         @break
@@ -45,6 +129,7 @@
     @case('x-circle')
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-full h-full"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         @break
+
     @default
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-full h-full"><circle cx="12" cy="12" r="9" stroke-width="2" /></svg>
+        <span class="text-gray-400">?</span>
 @endswitch
