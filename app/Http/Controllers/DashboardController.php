@@ -11,8 +11,14 @@ class DashboardController extends Controller
     public function index(Request $request)
     {   
         
-        if ($request->user()->hasRole(config('seguridad.rol_cliente'))) {
+        $usuario = $request->user();
+
+        if ($usuario->hasRole(config('seguridad.rol_cliente'))) {
             return redirect()->route('citas.index');
+        }
+
+        if ($usuario->hasRole(config('seguridad.rol_empleado'))) {
+            return redirect()->route('agenda.index');
         }
 
         $inicioMes         = now()->startOfMonth();
