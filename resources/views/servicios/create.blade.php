@@ -2,95 +2,98 @@
 
 
 @section('title')
-    TITULO
+    Nuevo Servicio
 @endsection
-
 
 @section('content')
 
+<div class="max-w-4xl mx-auto">
 
-<x-card>
+    <div class="bg-white shadow-lg rounded-xl p-4 sm:p-5">
 
-    <div class="container mx-auto mt-10">
-
-    <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-8">
-
-        <h2 class="text-3xl font-bold text-center mb-6">
-
-            Nuevo servicio
-
+        <h2 class="text-xl font-bold text-center mb-3">
+            Nuevo Servicio
         </h2>
 
-
         @if($errors->any())
-
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-5">
-
-                <ul>
-
+            <div class="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg mb-3 text-xs">
+                <ul class="list-disc list-inside">
                     @foreach($errors->all() as $error)
-
                         <li>{{ $error }}</li>
-
                     @endforeach
-
                 </ul>
-
             </div>
-
         @endif
 
-        
-    
-        <form action="{{route ('servicio.store')}}" method="post">
-
+        <form action="{{ route('servicio.store') }}" method="post">
             @csrf
-            
-            <div class="mb-5">
-                <label for="" class="block mb-2 font-semibold ">Nombre servicio</label>
-                <input type="text" name="nombreServicio"  class="w-full border rounded px-3 py-2">
-            </div>
 
-            <div class="mb-5">
-                <label for="" class="block mb-2 font-semibold ">Duracion servicio</label>
-                <input type="time" name="duracionServicio"  class="w-full border rounded px-3 py-2">
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2.5">
 
-            <div class="mb-5">
-                <label for="" class="block mb-2 font-semibold ">Descripcion Servicio</label>
-                <input type="text" name="descripcionServicio"  class="w-full border rounded px-3 py-2">
-            </div>            
-            
+                <div>
+                    <label for="nombreServicio" class="block text-xs font-semibold mb-1">Nombre Servicio</label>
+                    <input type="text" id="nombreServicio" name="nombreServicio" value="{{ old('nombreServicio') }}"
+                        class="w-full border rounded-lg px-2.5 py-1.5 text-sm @error('nombreServicio') border-red-500 @enderror" required>
+                    @error('nombreServicio')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
 
-            <div class="mb-5">
-                <label class="block mb-2 font-semibold">Precio Servicio</label>
-                <input type="number" name="precioServicio"  class="w-full border rounded px-3 py-2">
-            </div>
+                <div>
+                    <label for="duracionServicio" class="block text-xs font-semibold mb-1">Duración Servicio</label>
+                    <input type="time" id="duracionServicio" name="duracionServicio" value="{{ old('duracionServicio') }}"
+                        class="w-full border rounded-lg px-2.5 py-1.5 text-sm @error('duracionServicio') border-red-500 @enderror" required>
+                    @error('duracionServicio')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
 
-            
-            <div class="mb-5">
-                <label for="" class="block mb-2 font-semibold ">Estado servicio</label>
-                
-                <select name="estadoServicio">
-                    <option value="activo">Activo</option>
-                    <option value="inactivo">Inactivo</option>
-                </select>
+                <div>
+                    <label for="precioServicio" class="block text-xs font-semibold mb-1">Precio Servicio</label>
+                    <input type="number" id="precioServicio" name="precioServicio" value="{{ old('precioServicio') }}"
+                        placeholder="Ej: 25000"
+                        class="w-full border rounded-lg px-2.5 py-1.5 text-sm @error('precioServicio') border-red-500 @enderror" required>
+                    @error('precioServicio')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
 
-            </div>
-    
+                <div>
+                    <label for="estadoServicio" class="block text-xs font-semibold mb-1">Estado</label>
+                    <select id="estadoServicio" name="estadoServicio" class="w-full border rounded-lg px-2.5 py-1.5 text-sm @error('estadoServicio') border-red-500 @enderror">
+                        <option value="activo" @selected(old('estadoServicio', 'activo') === 'activo')>Activo</option>
+                        <option value="inactivo" @selected(old('estadoServicio') === 'inactivo')>Inactivo</option>
+                    </select>
+                    @error('estadoServicio')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
 
-            <div>
-                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white rounded px-5 py-2">
-                    Guardar servicio
-                </button>
+                <div class="md:col-span-2">
+                    <label for="descripcionServicio" class="block text-xs font-semibold mb-1">Descripción Servicio</label>
+                    <input type="text" id="descripcionServicio" name="descripcionServicio" value="{{ old('descripcionServicio') }}"
+                        placeholder="Breve detalle del servicio"
+                        class="w-full border rounded-lg px-2.5 py-1.5 text-sm @error('descripcionServicio') border-red-500 @enderror">
+                    @error('descripcionServicio')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex items-center justify-end gap-3 mt-2 md:col-span-2">
+                    <a href="{{ route('servicio.index') }}"
+                        class="bg-gray-500 hover:bg-gray-700 text-white rounded-lg px-4 py-1.5 text-sm">
+                        Volver
+                    </a>
+                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white rounded-lg px-5 py-1.5 text-sm">
+                        Guardar Servicio
+                    </button>
+                </div>
+
             </div>
 
         </form>
 
     </div>
-
 </div>
-
-</x-card>
 
 @endsection
