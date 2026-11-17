@@ -7,6 +7,8 @@ return [
 
     'rol_cliente' => 'cliente',
 
+    'rol_empleado' => 'empleado',
+
     'permiso_admin' => 'gestionar seguridad',
 
     'roles_protegidos' => ['administrador'],
@@ -31,6 +33,9 @@ return [
         'formularioMotivo' => 'editar',
         'actualizarMotivo' => 'editar',
         'ingresos' => 'ver',
+        'iniciar' => 'iniciar',
+        'finalizar' => 'finalizar',
+        'eventos' => 'ver',
     ],
 
     'auditar_prefijos' => ['App\\'],

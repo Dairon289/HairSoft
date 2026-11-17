@@ -40,16 +40,23 @@ class SeguridadSeeder extends Seeder
         );
         $rolCliente->givePermissionTo(['ver citas', 'crear citas', 'cancelar citas', 'ver servicios']);
 
+        $rolEmpleado = Role::firstOrCreate(
+            ['name' => config('seguridad.rol_empleado'), 'guard_name' => $guard],
+            ['activo' => true]
+        );
+        $rolEmpleado->givePermissionTo(['ver agenda', 'iniciar citas', 'finalizar citas']);
+
         $modelo = config('auth.providers.users.model');
-        $datos = config('seguridad.admin');
+        $datos  = config('seguridad.admin');
 
         $admin = $modelo::firstOrCreate(
             ['email' => $datos['email']],
-            ['name' => $datos['name'], 'password' => Hash::make($datos['password'])]
+            [
+                'name'     => $datos['name'],
+                'password' => $datos['password'],
+            ]
         );
         $admin->assignRole($rolAdmin);
-
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     private function crearPermisosDeModulos(string $guard): void
@@ -59,7 +66,7 @@ class SeguridadSeeder extends Seeder
 
         foreach ($modulos as $modulo) {
             $accionesModulo = $modulo === 'citas'
-                ? array_merge($acciones, ['cancelar'])
+                ? array_merge($acciones, ['cancelar', 'iniciar', 'finalizar'])
                 : $acciones;
 
             foreach ($accionesModulo as $accion) {
@@ -69,5 +76,10 @@ class SeguridadSeeder extends Seeder
                 );
             }
         }
+
+        Permission::firstOrCreate(
+            ['name' => 'ver agenda', 'guard_name' => $guard],
+            ['modulo' => 'agenda']
+        );
     }
 }
