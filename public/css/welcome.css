@@ -1,0 +1,412 @@
+/* ==========================================================================
+   HairSoft - Landing Page (Welcome)
+   Paleta uniforme Dark Luxury: Grafito, Panel, Café y Latón
+   ========================================================================== */
+
+:root {
+    --hs-grafito:     #14171E;
+    --hs-panel:       #1E222A;
+    --hs-linea:       #363C44;
+    --hs-cafe:        #8B654A;
+    --hs-cafe-hover:  #72523B;
+    --hs-laton:       #D8C3A5;
+    --hs-hueso:       #F8F4ED;
+    --hs-humo:        #9CA3AF;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--hs-grafito);
+    color: var(--hs-hueso);
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
+    letter-spacing: 0.02em;
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   NAVBAR
+   -------------------------------------------------------------------------- */
+.navbar {
+    background-color: var(--hs-panel);
+    border-bottom: 1px solid var(--hs-linea);
+    padding: 1rem 8vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--hs-hueso);
+}
+
+.nav-logo {
+    height: 32px;
+    width: auto;
+}
+
+.navbar-brand span span {
+    color: var(--hs-laton);
+}
+
+.navbar-links {
+    display: flex;
+    gap: 1.75rem;
+    align-items: center;
+}
+
+.navbar-links a {
+    color: var(--hs-humo);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.navbar-links a:hover {
+    color: var(--hs-laton);
+}
+
+.btn-nav {
+    background-color: var(--hs-cafe) !important;
+    color: #FFFFFF !important;
+    padding: 0.45rem 1.15rem;
+    border-radius: 6px;
+    font-weight: 600 !important;
+    transition: background-color 0.2s;
+}
+
+.btn-nav:hover {
+    background-color: var(--hs-cafe-hover) !important;
+}
+
+/* --------------------------------------------------------------------------
+   HERO
+   -------------------------------------------------------------------------- */
+.hero {
+    background: 
+        linear-gradient(135deg, rgba(20, 23, 30, 0.94) 0%, rgba(30, 34, 42, 0.85) 100%),
+        url('../img/login-barberia.jpg') center/cover no-repeat;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    padding: 4.5rem 8vw;
+    position: relative;
+    border-bottom: 1px solid var(--hs-linea);
+}
+
+.hero-content {
+    max-width: 620px;
+    border-left: 3px solid var(--hs-laton);
+    padding-left: 2rem;
+}
+
+.hero-eyebrow {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--hs-laton);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+    color: var(--hs-hueso);
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+}
+
+.hero h1 em {
+    font-style: normal;
+    color: var(--hs-laton);
+}
+
+.hero-desc {
+    font-size: 1rem;
+    color: var(--hs-humo);
+    line-height: 1.7;
+    margin-bottom: 2.25rem;
+}
+
+.btn-primary {
+    display: inline-block;
+    background-color: var(--hs-cafe);
+    color: #FFFFFF;
+    padding: 0.75rem 1.8rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--hs-cafe-hover);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    display: inline-block;
+    border: 1px solid var(--hs-linea);
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--hs-hueso);
+    padding: 0.75rem 1.8rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    margin-left: 0.85rem;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    border-color: var(--hs-laton);
+    color: var(--hs-laton);
+}
+
+/* --------------------------------------------------------------------------
+   SECCIONES Y DIVISORES
+   -------------------------------------------------------------------------- */
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--hs-linea), transparent);
+}
+
+.section {
+    padding: 4.5rem 8vw;
+}
+
+.section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--hs-laton);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.section h2 {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    color: var(--hs-hueso);
+    margin-bottom: 0.85rem;
+    line-height: 1.2;
+}
+
+.section-intro {
+    color: var(--hs-humo);
+    font-size: 0.95rem;
+    max-width: 540px;
+    margin-bottom: 2.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   ABOUT GRID Y MÉTRICAS
+   -------------------------------------------------------------------------- */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.about-text p {
+    color: var(--hs-humo);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.about-visual {
+    background-color: var(--hs-panel);
+    border: 1px solid var(--hs-linea);
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.stat-item {
+    border-left: 3px solid var(--hs-laton);
+    padding-left: 1.25rem;
+}
+
+.stat-number {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--hs-laton);
+    line-height: 1;
+}
+
+.stat-desc {
+    font-size: 0.85rem;
+    color: var(--hs-humo);
+    margin-top: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   SERVICIOS
+   -------------------------------------------------------------------------- */
+.servicios-bg {
+    background-color: #111319;
+    border-top: 1px solid var(--hs-linea);
+    border-bottom: 1px solid var(--hs-linea);
+}
+
+.servicios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.5rem;
+}
+
+.servicio-card {
+    background-color: var(--hs-panel);
+    border: 1px solid var(--hs-linea);
+    border-radius: 10px;
+    padding: 2rem 1.5rem;
+    transition: all 0.25s ease;
+}
+
+.servicio-card:hover {
+    border-color: var(--hs-laton);
+    transform: translateY(-3px);
+}
+
+.servicio-icon {
+    width: 44px;
+    height: 44px;
+    background-color: rgba(139, 101, 74, 0.2);
+    border: 1px solid rgba(216, 195, 165, 0.25);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+}
+
+.servicio-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--hs-laton);
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.servicio-card h3 {
+    font-size: 1.15rem;
+    color: var(--hs-hueso);
+    margin-bottom: 0.5rem;
+}
+
+.servicio-card p {
+    font-size: 0.85rem;
+    color: var(--hs-humo);
+    line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   PASOS
+   -------------------------------------------------------------------------- */
+.pasos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 2rem;
+}
+
+.paso-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--hs-laton);
+    line-height: 1;
+    margin-bottom: 0.65rem;
+}
+
+.paso h3 {
+    font-size: 1.05rem;
+    color: var(--hs-hueso);
+    margin-bottom: 0.35rem;
+}
+
+.paso p {
+    font-size: 0.85rem;
+    color: var(--hs-humo);
+    line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   FOOTER
+   -------------------------------------------------------------------------- */
+.footer {
+    background-color: var(--hs-panel);
+    border-top: 1px solid var(--hs-linea);
+    padding: 2rem 8vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.footer-brand {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--hs-hueso);
+}
+
+.footer-brand span span {
+    color: var(--hs-laton);
+}
+
+.footer p {
+    font-size: 0.8rem;
+    color: var(--hs-humo);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------------- */
+@media (max-width: 800px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+    .hero-content {
+        padding-left: 1.25rem;
+    }
+    .btn-secondary {
+        margin-left: 0;
+        margin-top: 0.75rem;
+    }
+    .hero-ctas {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

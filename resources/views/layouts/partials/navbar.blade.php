@@ -161,12 +161,14 @@
                         Mi perfil
                     </a>
 
-                    <a
-                        href="{{ Route::has('settings.index') ? route('settings.index') : '#' }}"
-                        class="block px-4 py-3 text-sm hs-menu-item"
-                    >
-                        Configuración
-                    </a>
+                    @if(Route::has('settings.index'))
+                        <a
+                            href="{{ route('settings.index') }}"
+                            class="block px-4 py-3 text-sm hs-menu-item"
+                        >
+                            Configuración
+                        </a>
+                    @endif
 
                     <hr class="my-1 hs-menu-borde">
 

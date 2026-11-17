@@ -8,14 +8,12 @@
 >
     <div class="h-full flex flex-col">
 
-        <!-- Logo -->
         <div class="flex items-center gap-3 h-20 px-6 border-b hs-borde">
 
-            <div class="w-10 h-10 rounded-xl hs-logo
-                        flex items-center justify-center
-                        text-lg font-bold shadow-md">
-                H
-            </div>
+            <img src="{{ asset('img/logo-emblema.png') }}"
+                alt="Logo de {{ config('app.name', 'HairSoft') }}"
+                class="w-10 h-10 rounded-xl shadow-md"
+            >
 
             <span class="hs-marca text-2xl">
                 {{ config('app.name', 'HairSoft') }}
@@ -39,9 +37,11 @@
                         'title' => 'GESTIÓN',
                         'links' => [
                             ['label' => 'Servicios', 'route' => 'servicio.index', 'icon' => 'scissors', 'can' => ['ver servicios']],
-                            ['label' => 'Citas', 'route' => 'citas.index', 'icon' => 'calendar', 'can' => ['ver citas']],
-                            ['label' => 'Clientes', 'route' => 'cliente.index', 'icon' => 'user-group', 'can' => ['ver clientes']],
                             ['label' => 'Empleados', 'route' => 'empleados.index', 'icon' => 'id-card', 'can' => ['ver empleados']],
+                            ['label' => 'Nuestro equipo', 'route' => 'cliente.empleados', 'icon' => 'user-group', 'rol' => 'cliente'],
+                            ['label' => 'Clientes', 'route' => 'cliente.index', 'icon' => 'user-group', 'can' => ['ver clientes']],
+                            ['label' => 'Agenda', 'route' => 'agenda.index', 'icon' => 'calendar', 'can' => ['ver agenda']],
+                            ['label' => 'Citas', 'route' => 'citas.index', 'icon' => 'calendar', 'can' => ['ver citas']],
                             ['label' => 'Pagos', 'route' => 'pagos.index', 'icon' => 'credit-card', 'can' => ['ver pagos']],
                         ],
                     ],
@@ -81,7 +81,10 @@
                             $hasPermission = empty($link['can'])
                                 || (auth()->check() && auth()->user()->canAny($link['can']));
 
-                            return $routeExists && $hasPermission;
+                            $hasRole = empty($link['rol'])
+                                || (auth()->check() && auth()->user()->hasRole($link['rol']));
+
+                            return $routeExists && $hasPermission && $hasRole;
                         });
                 @endphp
 
@@ -98,7 +101,9 @@
 
                             @php
                                 $active = request()->routeIs(
-                                    explode('.', $link['route'])[0] . '.*'
+                                    empty($link['rol'])
+                                        ? explode('.', $link['route'])[0] . '.*'
+                                        : $link['route']
                                 );
                             @endphp
 
